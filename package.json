@@ -19,7 +19,12 @@
   },
   "homepage": "https://github.com/vbshnsk/matchify#readme",
   "dependencies": {
-    "koa": "^2.11.0"
+    "dotenv": "^8.2.0",
+    "koa": "^2.11.0",
+    "koa-body": "^4.1.1",
+    "koa-logger": "^3.2.1",
+    "koa-router": "^8.0.8",
+    "pg": "^8.0.2"
   },
   "devDependencies": {
     "eslint": "^6.8.0"
