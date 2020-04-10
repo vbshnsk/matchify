@@ -1,0 +1,23 @@
+{
+  "name": "matchify",
+  "version": "1.0.0",
+  "description": "Music taste based matching and statistic aggregation app linked to Spotify.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vbshnsk/matchify.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vbshnsk/matchify/issues"
+  },
+  "homepage": "https://github.com/vbshnsk/matchify#readme",
+  "dependencies": {
+    "koa": "^2.11.0"
+  }
+}
