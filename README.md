@@ -2,7 +2,6 @@
 Music taste based matching and statistic aggregation app linked to Spotify.
 
 ## Functional description:
-TODO:
 * Creating your own profile
 * Connecting to Spotify
 * Listening history
