@@ -7,9 +7,6 @@ const Logger = require("koa-logger");
 const addRoutes = require("./routes");
 
 const app = new Koa();
-const db = require("./db")
-
-app.context.db = db;
 
 app.use(Logger());
 addRoutes(app);
