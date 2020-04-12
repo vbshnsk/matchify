@@ -20,7 +20,7 @@ router.use(async (ctx, next) =>{
 router.get('/', (ctx) => ctx.body = ctx.session);
 
 router.post('/', bodyParser(), User.authorize(), ctx => {
-    ctx.redirect('/');
+    ctx.redirect('/login');
 });
 
 module.exports = router;

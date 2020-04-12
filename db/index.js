@@ -4,7 +4,6 @@ const { Pool } = require('pg');
 const pool = new Pool({ database: "user_data" });
 
 const setSession = async (key, sess, maxAge, { rolling, changed }) => {
-  console.log(rolling, changed)
   if (changed) {
     pool.query(
       `insert into 

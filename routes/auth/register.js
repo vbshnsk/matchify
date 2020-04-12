@@ -19,12 +19,9 @@ router.use(async (ctx, next) =>{
 
 router.get("/", ctx => ctx.body = "Not the page you're looking for.");
 
-router.post("/", bodyParser(), async (ctx, next) => {
-    await User.insertUser(ctx.request.body);
-    await next();
+router.post("/", bodyParser(), User.register(), User.authorize(), ctx => {
     ctx.redirect('/login');
-})
+});
 
-router.use(User.authorize());
 
 module.exports = router;

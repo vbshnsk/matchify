@@ -17,12 +17,13 @@ const authorize = () => {
     return async function(ctx, next) {
         const data = ctx.request.body;
         const user = await selectOneByUsername(data.username);
+
         if (user === undefined) { throw new Error("Authorization Error"); }
         const passwordValidation = await bcrypt.compare(data.password, user.Password);
         if (!passwordValidation) { throw new Error("Authorization Error"); }
 
         ctx.session.userid = user.UserID;
-        
+
         await next()
     }
 }
@@ -38,15 +39,25 @@ const validate = async data => {
     }
 }
 
+const register =  () => { 
+    return async (ctx, next) => {
+        const data = ctx.request.body;
+        const formattedData = await validate(data);
+        await db.query('insert into "User"("Username", "Password", "Email", "BirthDate") values($1, $2, $3, $4) returning *', formattedData);
+
+        await next();
+    } 
+}
+
 const selectOneByID = async userid => (db.query('select * from "User" where "UserID"=$1', [userid])).rows[0];
 
 const selectOneByUsername = async username => (await db.query('select * from "User" where "Username"=$1', [username])).rows[0];
 
-const insertUser = async userData => db.query('insert into "User"("Username", "Password", "Email", "BirthDate") values($1, $2, $3, $4) returning *', await validate(userData));
 
 module.exports = {
-    insertUser,
     selectOneByUsername,
     selectOneByID,
+    register,
     authorize,
 }
+ 

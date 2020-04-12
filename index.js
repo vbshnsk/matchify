@@ -12,7 +12,7 @@ const app = new Koa();
 app.keys = ['test'];
 const storeOptions = require('./db').storeOptions;
 
-app.use(session({ maxAge: 2592000000, rolling: true, store: storeOptions}, app));
+app.use(session({ maxAge: 600000, rolling: true, store: storeOptions }, app));
 
 app.use(logger());
 addRoutes(app);
