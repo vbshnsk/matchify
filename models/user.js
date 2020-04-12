@@ -13,6 +13,17 @@ const hashPassword = password => {
     return hash;
 }
 
+const validate = async data => {
+    if (usernameMatcher.test(data.username) &&
+        passwordMatcher.test(data.password) &&
+        dateMatcher.test(data.birthdate)) {
+            return [data.username, await hashPassword(data.password), data.email, data.birthdate];
+    }
+    else {
+        throw new Error("Registration Error");
+    }
+}
+
 const authorize = () => {
     return async function(ctx, next) {
         const data = ctx.request.body;
@@ -28,18 +39,7 @@ const authorize = () => {
     }
 }
 
-const validate = async data => {
-    if (usernameMatcher.test(data.username) &&
-        passwordMatcher.test(data.password) &&
-        dateMatcher.test(data.birthdate)) {
-            return [data.username, await hashPassword(data.password), data.email, data.birthdate];
-    }
-    else {
-        throw new Error("Registration Error");
-    }
-}
-
-const register =  () => { 
+const register = () => { 
     return async (ctx, next) => {
         const data = ctx.request.body;
         const formattedData = await validate(data);
@@ -47,6 +47,13 @@ const register =  () => {
 
         await next();
     } 
+}
+
+const logout = () => {
+    return async (ctx, next) => {
+        ctx.session = null;
+        await next;
+    }
 }
 
 const selectOneByID = async userid => (db.query('select * from "User" where "UserID"=$1', [userid])).rows[0];
@@ -59,5 +66,6 @@ module.exports = {
     selectOneByID,
     register,
     authorize,
+    logout,
 }
  
