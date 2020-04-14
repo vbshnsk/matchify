@@ -1,11 +1,7 @@
 'use strict'
 
-const Register = require('./auth/register').routes();
-const Login = require('./auth/login').routes();
-const Logout = require('./auth/logout').routes();
+const Auth = require('./auth').routes();
 
 module.exports = app => {
-    app.use(Register);
-    app.use(Login);
-    app.use(Logout);
+    app.use(Auth);
 }
