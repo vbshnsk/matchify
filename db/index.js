@@ -13,7 +13,7 @@ const setSession = async (key, sess, maxAge, { rolling, changed }) => {
 
 const getSession = async (key, maxAge, { rolling }) => (await pool.query(`select * from session where "sessionid"=$1`, [key])).rows[0]["session"];
 
-const destroySession = async key => pool.query(`delete from session where "sessionid"=$1`, [key]);
+const destroySession = async key => await pool.query(`delete from session where "sessionid"=$1`, [key]);
 
 module.exports = {
     query: (text, params) => pool.query(text, params),

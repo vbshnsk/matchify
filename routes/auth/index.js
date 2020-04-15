@@ -10,5 +10,4 @@ const router = new Router();
 
 router.use(login, logout, register);
 
-
 module.exports = router;
