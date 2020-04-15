@@ -17,7 +17,7 @@ router.use(async (ctx, next) =>{
     }
 });
 
-router.get('/', (ctx) => ctx.body = ctx.session);
+router.get('/', (ctx) => ctx.body = 1);
 
 router.post('/', bodyParser(), User.authorize(), ctx => {
     ctx.redirect('/login');

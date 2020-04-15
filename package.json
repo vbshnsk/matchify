@@ -26,7 +26,8 @@
     "koa-logger": "^3.2.1",
     "koa-router": "^8.0.8",
     "koa-session": "^5.13.1",
-    "pg": "^8.0.2"
+    "pg": "^8.0.2",
+    "sql-template": "^1.2.0"
   },
   "devDependencies": {
     "eslint": "^6.8.0"

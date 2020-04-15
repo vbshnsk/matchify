@@ -1,30 +1,23 @@
 'use strict'
 
 const { Pool } = require('pg');
+const sql = require('sql-template');
 const pool = new Pool({ database: "user_data" });
 
 const setSession = async (key, sess, maxAge, { rolling, changed }) => {
-  if (changed) {
-    pool.query(
-      `insert into 
-      sessions("SessionID", "SessionData") 
-      values($1, $2)`, [key, sess]);
-  }
-  else if (rolling) {
-    pool.query(
-      `update 
-      sessions
-      set "SessionData"=$2
-      where "SessionID"=$1`, [key, sess]);
-  }
+  await pool.query(`
+  insert into session(sessionid, maxage, session) values($1, $2, $3) 
+  on conflict (sessionid) do
+  update set maxage=$2, session=$3`, [key, maxAge, sess]);
 }
 
-const getSession = async (key, maxAge, { rolling }) => (await pool.query(`select * from sessions where "SessionID"=$1`, [key])).rows[0]["SessionData"];
+const getSession = async (key, maxAge, { rolling }) => (await pool.query(`select * from session where "sessionid"=$1`, [key])).rows[0]["session"];
 
-const destroySession = async key => pool.query(`delete from sessions where "SessionID"=$1`, [key]);
+const destroySession = async key => pool.query(`delete from session where "sessionid"=$1`, [key]);
 
 module.exports = {
     query: (text, params) => pool.query(text, params),
+    sql,
     storeOptions: {
       get: getSession,
       set: setSession,
