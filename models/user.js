@@ -41,6 +41,7 @@ const authorize = () => {
         if (!passwordValidation) { throw new Error("Authorization Error"); }
 
         ctx.session.userid = user.userid;
+        ctx.session.authorized = true;
 
         await next()
     }
@@ -64,7 +65,8 @@ const register = () => {
 
 const logout = () => {
     return async (ctx, next) => {
-        ctx.session = null;
+        ctx.session.userid = undefined;
+        ctx.session.authorized = false;
         await next();
     }       
 }
