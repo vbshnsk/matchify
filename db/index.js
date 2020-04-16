@@ -11,7 +11,7 @@ const setSession = async (key, sess, maxAge) => {
   update set maxage=$2, session=$3`, [key, maxAge, sess]);
 }
 
-const getSession = async key => (await pool.query(`select * from session where "sessionid"=$1`, [key])).rows[0]?.session;
+const getSession = async key => (await pool.query(`select * from session where "sessionid"=$1`, [key])).rows[0].session;
 
 const destroySession = async key => await pool.query(`delete from session where "sessionid"=$1`, [key]);
 
