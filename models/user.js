@@ -5,7 +5,6 @@ const bcrypt = require('bcrypt');
 
 const usernameMatcher =  /^[a-z0-9_-]{3,16}$/;
 const passwordMatcher = /^(?=.*\d)(?=.*[a-z])[0-9a-zA-Z]{8,}$/;
-const dateMatcher = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/;
 
 const hashPassword = password => {
     const salt = 10;
