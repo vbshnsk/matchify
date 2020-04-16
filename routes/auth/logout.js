@@ -17,7 +17,7 @@ router.use(async (ctx, next) =>{
 router.prefix('/logout');
 
 router.get('/', User.logout(), ctx => {
-    ctx.redirect('/login');
+    ctx.body = "Logout successful."
 });
 
 module.exports = router;
