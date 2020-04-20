@@ -69,20 +69,6 @@ class User {
         }      
     }
 
-<<<<<<< HEAD
-const register = () => { 
-    return async (ctx, next) => {
-        const data = validate(ctx.request.body);
-        data.password = await hashPassword(data.password); 
-        await db.query(db.sql.insert("User", data));
-        await next();
-    } 
-}
-
-const logout = () => {
-    return async (ctx, next) => {
-        ctx.session = null;
-        await next();
     /**
  	* Logout middleware.
  	*/
