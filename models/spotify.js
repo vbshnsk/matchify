@@ -8,6 +8,7 @@ const credentials = {
     clientId: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
 }
+const http = require('http');   
 
 /**
  * Generate Spotify authorization link and redirect user.
@@ -58,11 +59,10 @@ const refreshCredentials = async (spotify, userid) => {
 const getCurrentTrack = async (spotify) => {
     const fetch = (await spotify.getMyCurrentPlayingTrack()).body;  
     if (!fetch.item) return undefined;
-    const track = {
+    const track ={
         artists: fetch.item.artists.map(val => val.name),
         name: fetch.item.name,
-        genres: [],
-        spotifyid: fetch.item.id, 
+        spotifyid: fetch.item.id,
     }
     return {
         track, 
@@ -86,10 +86,11 @@ const listenToStreams = (spotify, userid) => {
             if(this.current != trackInfo.timestamp){
                 this.current = trackInfo.timestamp;
                 //get track id from DB 
-                let trackid = await Track.getID(track.name, track.artists);
+                let trackid = await Track.getID({spotifyid: track.spotifyid});
                 //add track to DB if it isn't there
                 if(!trackid){
-                    trackid = await Track.insert(track);
+                    track.genres = await setTags(track);
+                    trackid = (await Track.insert(track)).trackid;
                 }
                 //add play to DB
                 await Track.insertPlay(trackid, userid);
@@ -98,9 +99,11 @@ const listenToStreams = (spotify, userid) => {
             if (error.message === 'Unauthorized'){
                 refreshCredentials(spotify, userid);
             }
+            console.log(error);
         }
-    }, 30000);
+    }, 10000);
 };
+
 
 /**
  * Start listening to user's streams middleware.
@@ -116,6 +119,48 @@ const startListening = () => {
 
         listenToStreams(spotify, userid);
         await next();
+    }
+}
+
+/**
+ * Fetch tags from Last.fm
+ * @param {String} query
+ */
+
+const fetchTags = (query) => new Promise((resolve, reject) =>{
+    http.get(query, res => {
+        res.setEncoding('utf8');
+        let buffer = "";
+        res.on("data", chunk => {
+            buffer += chunk;
+        })
+        res.on("end", () => {
+            const tags = JSON.parse(buffer).toptags.tag.slice(0, 3).map(tag => tag.name);
+            if (tags.length === 0) reject();                
+            resolve(tags);
+        })
+        res.on("error", (err) =>{
+            resolve([]);
+        })
+    });   
+})
+
+const setTags = async (track) => {
+    const name = track.name.replace(/ /g, '+');
+    const artist = track.artists[0].replace(/ /g, '+');
+    const trackQuery = `http://ws.audioscrobbler.com/2.0/?method=track.gettoptags&artist=${artist}&track=${name}&api_key=${process.env.LAST_API}&format=json`;
+    const artistQuery = `http://ws.audioscrobbler.com/2.0/?method=artist.gettoptags&artist=${artist}&api_key=${process.env.LAST_API}&format=json`;
+
+    try {
+        return await fetchTags(trackQuery);
+    }
+    catch{
+        try{
+            return await fetchTags(artistQuery);
+        }
+        catch{
+            return [];
+        }
     }
 }
 
