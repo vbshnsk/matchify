@@ -89,7 +89,7 @@ const listenToStreams = (spotify, userid) => {
                 let trackid = await Track.getID({spotifyid: track.spotifyid});
                 //add track to DB if it isn't there
                 if(!trackid){
-                    track.genres = await setTags(track);
+                    track.genres = await setGenres(track);
                     trackid = (await Track.insert(track)).trackid;
                 }
                 //add play to DB
@@ -97,9 +97,8 @@ const listenToStreams = (spotify, userid) => {
             }
         } catch (error) {
             if (error.message === 'Unauthorized'){
-                refreshCredentials(spotify, userid);
+                await refreshCredentials(spotify, userid);
             }
-            console.log(error);
         }
     }, 10000);
 };
@@ -135,9 +134,9 @@ const fetchTags = (query) => new Promise((resolve, reject) =>{
             buffer += chunk;
         })
         res.on("end", () => {
-            const tags = JSON.parse(buffer).toptags.tag.slice(0, 3).map(tag => tag.name);
+            const tags = JSON.parse(buffer).toptags.tag.slice(0, 10).map(tag => tag.name.toLowerCase());
             if (tags.length === 0) reject();                
-            resolve(tags);
+            resolve(Track.validGenres(tags));
         })
         res.on("error", (err) =>{
             resolve([]);
@@ -145,7 +144,7 @@ const fetchTags = (query) => new Promise((resolve, reject) =>{
     });   
 })
 
-const setTags = async (track) => {
+const setGenres = async (track) => {
     const name = track.name.replace(/ /g, '+');
     const artist = track.artists[0].replace(/ /g, '+');
     const trackQuery = `http://ws.audioscrobbler.com/2.0/?method=track.gettoptags&artist=${artist}&track=${name}&api_key=${process.env.LAST_API}&format=json`;
