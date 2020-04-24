@@ -1,6 +1,6 @@
 'use strict'
 
-const Spotify = require('../../models/spotify')
+const Spotify = require('../../controllers/spotify')
 const Router = require('koa-router');
 
 const router = new Router();

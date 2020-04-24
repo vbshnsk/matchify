@@ -1,7 +1,7 @@
 'use strict'
 
-const Track = require('./track');
-const User = require('./user');
+const Track = require('../models/track');
+const User = require('../models/user');
 const SpotifyApi = require('spotify-web-api-node');
 const credentials = {
     redirectUri: 'http://localhost:3000/profile/spotify_back',

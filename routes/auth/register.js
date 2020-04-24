@@ -2,7 +2,7 @@
 
 const Router = require('koa-router');
 const bodyParser = require('koa-body');
-const User = require('../../models/user');
+const User = require('../../controllers/user');
 
 const router = new Router();
 

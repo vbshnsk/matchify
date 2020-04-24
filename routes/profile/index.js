@@ -1,7 +1,7 @@
 'use strict'
 
 const Router = require('koa-router');
-const Profile = require('../../models/profile')
+const Profile = require('../../controllers/profile')
 const router = new Router();
 
 const spotify = require('./spotify').routes();
