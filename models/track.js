@@ -23,7 +23,7 @@ class Track {
 
     /**
     * 
-    * @param {{}} options 
+    * @param {Object} options 
     * 
     */
 
@@ -49,6 +49,31 @@ class Track {
     static async validGenres(genres){
         const res = (await db.query(db.sql`select distinct name from "Genre" $where${{name: genres}}`)).rows;
         return res.map(val => val.name);
+    }
+
+    /**
+     * 
+     * @param {String} userid 
+     * @param {Object} range
+     * @param {Date} [range.from]
+     * @param {Date} [range.to]
+     */
+
+    static async getPlaysInRange(userid, {from, to}){
+        if(to === undefined) to = new Date();
+        if(from === undefined) from = from.setDate(to.getDate() - 7);
+        return await db.query(`
+        select "Track".* from "Play" 
+        join "Track" on "Play".trackid = "Track".trackid
+        where userid=$1 and (listenedon>$2 and listenedon<$3)`, [userid, from, to]);
+    }
+
+    static async getMainGenres(genres){
+        const res = await db.query(db.sql`
+        select distinct maingenre from "Genre"
+        $where${{name: genres}}
+        `);
+        return res.rows.reduce((accum, val) => [...accum, val.maingenre], []);
     }
 }
 
