@@ -21,6 +21,12 @@ const calculateTaste = async (plays) => {
     return stats.normalize();
 }
 
+/**
+ * 
+ * @param {[Track]} plays 
+ * 
+ */
+
 const calculateGenrePlays = (plays) => {
     const genres = plays.map(val => val.genres).flat();
     const count = genres.reduce((accum, val) => {
@@ -48,10 +54,10 @@ const statisticsOver = (days) => {
         const userid = ctx.session.userid;
         const plays = (await Track.getPlaysInRange(userid, {from: date})).rows;
 
-
         ctx.session.taste = await calculateTaste(plays);
         ctx.state.genres = calculateGenrePlays(plays);
         ctx.state.history = plays;
+        
         await next();
     }
 }
