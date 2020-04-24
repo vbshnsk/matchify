@@ -43,15 +43,13 @@ class Track {
     */
 
     static async insertPlay(trackid, userid){
-        return db.query(db.sql.insert("Play", {trackid, userid}));
+        return db.query(db.sql.insert("Play", {trackid, userid, listenedon: new Date()}));
     };
 
     static async validGenres(genres){
-        const res = (await db.query(db.sql`select name from "Genre" $where${{name: genres}}`)).rows;
+        const res = (await db.query(db.sql`select distinct name from "Genre" $where${{name: genres}}`)).rows;
         return res.map(val => val.name);
     }
 }
-
-
 
 module.exports = Track;

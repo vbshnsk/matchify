@@ -135,7 +135,7 @@ const fetchTags = (query) => new Promise((resolve, reject) =>{
         })
         res.on("end", () => {
             const tags = JSON.parse(buffer).toptags.tag.slice(0, 10).map(tag => tag.name.toLowerCase());
-            if (tags.length === 0) reject();                
+            if (tags.length === 0) resolve([]);                
             resolve(Track.validGenres(tags));
         })
         res.on("error", (err) =>{
@@ -150,17 +150,9 @@ const setGenres = async (track) => {
     const trackQuery = `http://ws.audioscrobbler.com/2.0/?method=track.gettoptags&artist=${artist}&track=${name}&api_key=${process.env.LAST_API}&format=json`;
     const artistQuery = `http://ws.audioscrobbler.com/2.0/?method=artist.gettoptags&artist=${artist}&api_key=${process.env.LAST_API}&format=json`;
 
-    try {
-        return await fetchTags(trackQuery);
-    }
-    catch{
-        try{
-            return await fetchTags(artistQuery);
-        }
-        catch{
-            return [];
-        }
-    }
+    let genres = await fetchTags(trackQuery);
+    if(genres.length === 0) genres = await fetchTags(artistQuery);
+    return genres;
 }
 
 module.exports = {
