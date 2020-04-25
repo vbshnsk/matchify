@@ -61,7 +61,10 @@ class Track {
 
     static async getPlaysInRange(userid, {from, to}){
         if(to === undefined) to = new Date();
-        if(from === undefined) from = from.setDate(to.getDate() - 7);
+        if(from === undefined) {
+            from = new Date(); 
+            from.setDate(to.getDate() - 7);
+        }
         return await db.query(`
         select "Track".* from "Play" 
         join "Track" on "Play".trackid = "Track".trackid
