@@ -1,0 +1,39 @@
+version: "3"
+
+services:
+    server:
+        build: server/
+        command: node index.js
+        ports: 
+            - "3000:3000"
+        container_name: server
+        networks:
+            - network
+        depends_on: 
+            - postgres
+        command: ["./wait-for-it.sh", "postgres:5432", "--", "node", "index.js"]
+    client:
+        build: client/
+        ports:
+            - "8080:80"
+        container_name: client
+        depends_on: 
+            - server
+    postgres:
+        container_name: postgres-docker
+        image: postgres
+        environment: 
+            POSTGRES_USER: admin
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: user_data
+        volumes: 
+            - $HOME/docker/volumes/pg-matchify:/var/lib/postgresql/data 
+        ports:
+            - "5432:5432"
+        networks:
+            - network
+
+networks:
+    network:
+        driver: bridge
+
