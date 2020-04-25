@@ -10,9 +10,11 @@
 
 <script>
 export default {
-    async mounted(){
+    async beforeCreate() {
         const response = (await this.axios.get('http://localhost:3000/login', {withCredentials: true}));
-        console.log(response);
+        if(response.data.authorized){
+            this.$router.push({path: 'statistics'});
+        }
     },
     data: function(){
         return{
@@ -31,7 +33,10 @@ export default {
                 headers: {'Content-Type': 'application/x-www-form-urlencoded '},
                 withCredentials: true,
             }));
-            console.log(response);
+            if(response.status === 200){
+                this.$router.push({ path: '/statistics' })
+            }
+            
         }
     }
 }

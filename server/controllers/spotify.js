@@ -4,7 +4,7 @@ const Track = require('../models/track');
 const User = require('../models/user');
 const SpotifyApi = require('spotify-web-api-node');
 const credentials = {
-    redirectUri: 'http://localhost:3000/profile/spotify_back',
+    redirectUri: 'http://localhost:8080/spotify_back',
     clientId: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
 }
@@ -19,7 +19,7 @@ const authorize = () => {
         const auth = new SpotifyApi(credentials);
         const scopes = ['user-read-private', 'user-read-playback-state'];
         const authURL = auth.createAuthorizeURL(scopes, 'something');
-        ctx.redirect(authURL);
+        ctx.body = authURL;
     }
 }
 

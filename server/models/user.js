@@ -67,6 +67,10 @@ class User {
         }
     }
 
+    static async insert(data){
+        return db.query(db.sql.insert("User", data));
+    }
+
 }
 
 module.exports = User;

@@ -52,7 +52,7 @@ const register = () => {
     return async (ctx, next) => {
         const data = validate(ctx.request.body);
         data.password = await hashPassword(data.password); 
-        await db.query(db.sql.insert("User", data));
+        await User.insert(data);
         await next();
     }      
 }
