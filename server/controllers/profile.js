@@ -41,25 +41,35 @@ const calculateGenrePlays = (plays) => {
     return top;
 }
 
+
+const historyInRange = (from, to) => {
+    return async (ctx, next) => {
+        const userid = ctx.session.userid;
+        const plays = (await Track.getPlaysInRange(userid, {from, to})).rows;
+
+        ctx.state.history = plays;
+        await next();
+    }
+}
+
 /**
  * 
  * @param {number} days
  * 
  */
 
-const statisticsOver = (days) => {
-    const date = new Date();
-    date.setDate(date.getDate() - days);
-    return async (ctx, next) =>{
-        const userid = ctx.session.userid;
-        const plays = (await Track.getPlaysInRange(userid, {from: date})).rows;
+const statisticsFromHistory = () => {
+    return async (ctx, next) =>{;
+        const plays = ctx.state.history;
 
         ctx.session.taste = await calculateTaste(plays);
         ctx.state.genres = calculateGenrePlays(plays);
-        ctx.state.history = plays;
         
         await next();
     }
 }
 
-module.exports = { statisticsOver };
+module.exports = { 
+    historyInRange,
+    statisticsFromHistory,
+ };
