@@ -27,19 +27,20 @@ const routes = [
   {path: '/logout', component: Logout},
 ]
 
-const store = new Vuex.Store({
-  state: {
-    apiHost: 'http://localhost:3000'
-  }
-})
+// const store = new Vuex.Store({
+//   state: {
+//     apiHost: 'http://localhost:3000'
+//   }
+// })
 
 const router = new VueRouter({
+  mode: 'history',
   routes
 });
 
 
 new Vue({
   router,
-  store,
+  //store,
   render: h => h(App),
 }).$mount('#app')

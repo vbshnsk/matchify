@@ -1,6 +1,5 @@
 'use strict'
 
-require('dotenv').config();
 const PORT = process.env.PORT || 3000;
 const Koa = require("koa");
 const logger = require("koa-logger");
@@ -18,7 +17,6 @@ app.use(async (ctx, next) => {
     ctx.set('Access-Control-Allow-Credentials', true);
     await next();
 })
-
 
 app.use(logger());
 addRoutes(app);

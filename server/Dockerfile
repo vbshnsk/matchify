@@ -10,6 +10,8 @@ COPY . .
 
 RUN ["chmod", "+x", "/app/wait-for-it.sh"]
 
+RUN npm i nodemon -g
+
 EXPOSE 3000
 
-CMD ["node", "index.js"]
+CMD ["nodemon", "index.js"]

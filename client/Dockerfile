@@ -1,6 +1,6 @@
-FROM node:lts-alpine as build
+FROM node:13.0.0 as build
 
-WORKDIR /client
+WORKDIR /app
 
 COPY package*.json ./
 
@@ -8,12 +8,12 @@ RUN npm install
 
 COPY . .
 
-RUN npm run build
+EXPOSE 8080
 
-FROM nginx as production
+# FROM nginx as production
 
-COPY --from=build /client/dist /usr/share/nginx/html
+# COPY --from=build /app/dist /usr/share/nginx/html
 
-EXPOSE 80
+# EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+# CMD ["nginx", "-g", "daemon off;"]
