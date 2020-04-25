@@ -17,10 +17,12 @@ router.use(async (ctx, next) =>{
     }
 });
 
-router.get('/', (ctx) => ctx.body = ctx.session);
+router.get('/', (ctx) => {
+    ctx.body = ctx.session;
+});
 
 router.post('/', bodyParser(), User.authorize(), ctx => {
-    ctx.redirect('/login');
+    ctx.redirect('/profile/statistics');
 });
 
 module.exports = router;

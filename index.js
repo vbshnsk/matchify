@@ -12,7 +12,13 @@ const app = new Koa();
 app.keys = ['test'];
 const storeOptions = require('./db').storeOptions;
 
-app.use(session({ maxAge: 3600000, rolling: true, store: storeOptions }, app));
+app.use(session({ maxAge: 3600000, rolling: true, store: storeOptions, httpOnly: false, }, app));
+app.use(async (ctx, next) => {
+    ctx.set('Access-Control-Allow-Origin', 'http://localhost:8080');
+    ctx.set('Access-Control-Allow-Credentials', true);
+    await next();
+})
+
 
 app.use(logger());
 addRoutes(app);
