@@ -17,6 +17,7 @@ import Statistics from './components/Statistics'
 import Logout from './components/Logout'
 import Spotify from './components/Spotify'
 import SpotifyLogin from './components/Spotify.login'
+import NotFound from './components/NotFound'
 
 const routes = [
   {path: '/login', component: Login},
@@ -25,6 +26,7 @@ const routes = [
   {path: '/spotify', component: Spotify},
   {path: '/spotify_back', component: SpotifyLogin},
   {path: '/logout', component: Logout},
+  {path: '*', component: NotFound},
 ]
 
 // const store = new Vuex.Store({
