@@ -2,7 +2,7 @@
 
 const { Pool } = require('pg');
 const sql = require('sql-template');
-const pool = new Pool({ database: "user_data" });
+const pool = new Pool();
 
 const setSession = async (key, sess, maxAge) => {
   await pool.query(`
