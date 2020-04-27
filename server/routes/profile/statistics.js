@@ -7,7 +7,7 @@ const router = new Router();
 
 router.get('/statistics', Profile.historyInRange(), Profile.statisticsFromHistory(), ctx => {
     ctx.body = {
-        taste: ctx.session.taste,
+        taste: ctx.state.taste,
         genres: ctx.state.genres,
     }
 });
