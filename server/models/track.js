@@ -18,7 +18,10 @@ class Track {
     */
 
     static async insert(data){
-        return (await db.query(db.sql`insert into "Track" $keys${Object.keys(data)} $values${data} returning trackid`)).rows[0];
+        return (await db.query(db.sql`
+        insert into "Track" $keys${Object.keys(data)} $values${data} 
+        on conflict (spotifyid) do nothing 
+        returning trackid`)).rows[0];
     }
 
     /**
@@ -42,8 +45,8 @@ class Track {
     * 
     */
 
-    static async insertPlay(trackid, userid){
-        return db.query(db.sql.insert("Play", {trackid, userid, listenedon: new Date()}));
+    static async insertPlay(trackid, userid, timestamp){
+        return db.query(db.sql.insert("Play", {trackid, userid, listenedon: timestamp}));
     };
 
     static async validGenres(genres){
