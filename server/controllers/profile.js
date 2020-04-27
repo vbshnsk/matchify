@@ -44,8 +44,8 @@ const calculateGenrePlays = (plays) => {
 
 const historyInRange = (from, to) => {
     return async (ctx, next) => {
-        const userid = ctx.session.userid;
-        const plays = (await Track.getPlaysInRange(userid, {from, to})).rows;
+        const username = ctx.state.username;
+        const plays = (await Track.getPlaysInRange(username, {from, to})).rows;
 
         ctx.state.history = plays;
         await next();
@@ -69,7 +69,26 @@ const statisticsFromHistory = () => {
     }
 }
 
+const isAuthorized = () => {
+    return async (username, ctx, next) => {
+        if(username === 'me'){
+            if(ctx.session.authorized){
+                ctx.state.username = ctx.session.username;
+                await next();
+            }
+            else {
+                ctx.status = 401;
+             }
+        }
+        else {
+            ctx.state.username = username;
+            await next();
+        }
+    }
+}
+
 module.exports = { 
     historyInRange,
     statisticsFromHistory,
+    isAuthorized,
  };

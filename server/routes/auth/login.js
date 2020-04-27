@@ -22,7 +22,7 @@ router.get('/', (ctx) => {
 });
 
 router.post('/', bodyParser(), User.authorize(), ctx => {
-    ctx.redirect('/profile/statistics');
+    ctx.status = 200;
 });
 
 module.exports = router;
