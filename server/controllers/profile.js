@@ -59,7 +59,7 @@ const historyInRange = (from, to) => {
  */
 
 const statisticsFromHistory = () => {
-    return async (ctx, next) =>{;
+    return async (ctx, next) =>{
         const plays = ctx.state.history;
 
         ctx.session.taste = await calculateTaste(plays);

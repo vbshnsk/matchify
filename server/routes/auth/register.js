@@ -13,7 +13,7 @@ router.use(async (ctx, next) =>{
         await next();
     }
     catch(error){
-        console.error(error);   
+        ctx.status = 404;
     }
 });
 
