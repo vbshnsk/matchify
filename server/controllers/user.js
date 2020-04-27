@@ -39,6 +39,7 @@ const authorize = () => {
         if (!passwordValidation) { throw new Error("Authorization Error"); }
 
         ctx.session.userid = user.userid;
+        ctx.session.username = user.username;
 		ctx.session.authorized = true;
         await next()
  	  }

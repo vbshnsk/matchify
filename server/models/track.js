@@ -59,7 +59,7 @@ class Track {
      * @param {Date} [range.to]
      */
 
-    static async getPlaysInRange(userid, {from, to}){
+    static async getPlaysInRange(username, {from, to}){
         if(to === undefined) to = new Date();
         if(from === undefined) {
             from = new Date(); 
@@ -68,7 +68,8 @@ class Track {
         return await db.query(`
         select "Track".* from "Play" 
         join "Track" on "Play".trackid = "Track".trackid
-        where userid=$1 and (listenedon>$2 and listenedon<$3)`, [userid, from, to]);
+        join "User" on "Play".userid = "User".userid
+        where username=$1 and (listenedon>$2 and listenedon<$3)`, [username, from, to]);
     }
 
     static async getMainGenres(genres){
