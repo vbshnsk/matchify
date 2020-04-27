@@ -17,7 +17,7 @@ const http = require('http');
 const authorize = () => {
     return async ctx => {
         const auth = new SpotifyApi(credentials);
-        const scopes = ['user-read-private', 'user-read-playback-state'];
+        const scopes = ['user-read-private', 'user-read-playback-state', 'user-read-recently-played'];
         const authURL = auth.createAuthorizeURL(scopes, 'something');
         ctx.body = authURL;
     }
@@ -35,6 +35,45 @@ const login = () => {
         const tokens = { access: data.body.access_token, refresh: data.body.refresh_token };
         const userid = ctx.session.userid;
         await User.updateById(userid, { spotify: tokens });
+        await next();
+    }
+}
+
+const getSpotifyInstance = async (userid) => {
+    const tokens = (await User.selectOneByID(userid, "spotify")).spotify;
+    const spotify = new SpotifyApi(credentials);
+    spotify.setRefreshToken(tokens.refresh);
+    spotify.setAccessToken(tokens.access);
+    return spotify;
+}
+
+const insertPlay = async (userid, track, timestamp) => {
+    let trackid = await Track.getID({spotifyid: track.spotifyid});
+    if(!trackid){
+        track.genres = await setGenres(track);
+        trackid = (await Track.insert(track)).trackid;
+    }
+    await Track.insertPlay(trackid, userid, timestamp);
+}
+
+const getRecentData = () => {
+    return async (ctx, next) => {
+        const userid = ctx.session.userid;
+        const spotify = await getSpotifyInstance(userid);
+        await refreshCredentials(spotify, userid);
+
+        const history = (await spotify.getMyRecentlyPlayedTracks({limit: 50})).body.items
+        .map(val => 
+        [
+            {   
+                artists: val.track.artists.map(info => info.name),
+                name: val.track.name,
+                spotifyid: val.track.id
+            },
+            new Date(val.played_at)
+        ]);
+
+        history.forEach(async val => await insertPlay(userid, ...val))
         await next();
     }
 }
@@ -82,18 +121,9 @@ const listenToStreams = (spotify, userid) => {
             const trackInfo = await getCurrentTrack(spotify);
             if (trackInfo === undefined) return;
             const track = trackInfo.track;
-            //if currently playing track is not the same as before (accounting the repeat)
-            if(this.current != trackInfo.timestamp){
+            if(this.current !== trackInfo.timestamp){
                 this.current = trackInfo.timestamp;
-                //get track id from DB 
-                let trackid = await Track.getID({spotifyid: track.spotifyid});
-                //add track to DB if it isn't there
-                if(!trackid){
-                    track.genres = await setGenres(track);
-                    trackid = (await Track.insert(track)).trackid;
-                }
-                //add play to DB
-                await Track.insertPlay(trackid, userid);
+                await insertPlay(userid, track, new Date(trackInfo.timestamp));
             }
         } catch (error) {
             if (error.message === 'Unauthorized'){
@@ -111,10 +141,7 @@ const listenToStreams = (spotify, userid) => {
 const startListening = () => {
     return async (ctx, next) => {
         const userid = ctx.session.userid;
-        const tokens = (await User.selectOneByID(userid, "spotify")).spotify;
-        const spotify = new SpotifyApi(credentials);
-        spotify.setRefreshToken(tokens.refresh);
-        spotify.setAccessToken(tokens.access);
+        const spotify = await getSpotifyInstance(userid);
 
         listenToStreams(spotify, userid);
         await next();
@@ -134,7 +161,9 @@ const fetchTags = (query) => new Promise((resolve, reject) =>{
             buffer += chunk;
         })
         res.on("end", () => {
-            const tags = JSON.parse(buffer).toptags.tag.slice(0, 10).map(tag => tag.name.toLowerCase());
+            const res = JSON.parse(buffer).toptags;
+            if(res === undefined) resolve([]);
+            const tags = res.tag.slice(0, 10).map(tag => tag.name.toLowerCase());
             if (tags.length === 0) resolve([]);                
             resolve(Track.validGenres(tags));
         })
@@ -145,8 +174,8 @@ const fetchTags = (query) => new Promise((resolve, reject) =>{
 })
 
 const setGenres = async (track) => {
-    const name = track.name.replace(/ /g, '+');
-    const artist = track.artists[0].replace(/ /g, '+');
+    const name = encodeURIComponent(track.name);
+    const artist = encodeURIComponent(track.artists[0]);
     const trackQuery = `http://ws.audioscrobbler.com/2.0/?method=track.gettoptags&artist=${artist}&track=${name}&api_key=${process.env.LAST_API}&format=json`;
     const artistQuery = `http://ws.audioscrobbler.com/2.0/?method=artist.gettoptags&artist=${artist}&api_key=${process.env.LAST_API}&format=json`;
 
@@ -159,4 +188,5 @@ module.exports = {
     authorize,
     login,
     startListening,
+    getRecentData,
 }

@@ -62,7 +62,7 @@ const statisticsFromHistory = () => {
     return async (ctx, next) =>{
         const plays = ctx.state.history;
 
-        ctx.session.taste = await calculateTaste(plays);
+        ctx.state.taste = await calculateTaste(plays);
         ctx.state.genres = calculateGenrePlays(plays);
         
         await next();
