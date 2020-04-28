@@ -14,7 +14,7 @@ export default {
     async beforeCreate() {
         const response = (await this.axios.get('http://localhost:3000/login', {withCredentials: true}));
         if(response.data.authorized){
-            this.$router.push({path: '/statistics'});
+            this.$router.push({path: '/profile'});
         }
     },
     data: function(){

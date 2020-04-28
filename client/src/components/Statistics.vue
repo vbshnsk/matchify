@@ -29,9 +29,14 @@
 <script>
 export default {
     async beforeCreate(){
-        const response = await this.axios.get('http://localhost:3000/profile/statistics', {withCredentials: true});
-        this.genres = response.data.genres;
-        this.taste = response.data.taste;
+        const endpoint = this.$route.params.username ? this.$route.params.username : 'me';
+        try {
+            const response = await this.axios.get(process.env.VUE_APP_SERVER + '/profile/' + endpoint + '/statistics', {withCredentials: true});
+            this.genres = response.data.genres;
+            this.taste = response.data.taste;
+        } catch (error) {
+            this.$router.push({ path: '/login'});
+        }
     },
     data: function(){
         return {

@@ -1,9 +1,9 @@
 <template>
     <div class="login-form">
-        <form @submit="submited">
+        <form @submit.prevent>
             <input v-model="username" placeholder="Username"><br>
             <input v-model="password" placeholder="Password"><br>
-            <input type="submit">
+            <input @click="submited()" type="submit">
         </form>
     </div>
 </template>
@@ -11,9 +11,9 @@
 <script>
 export default {
     async beforeCreate() {
-        const response = (await this.axios.get('http://localhost:3000/login', {withCredentials: true}));
+        const response = (await this.axios.get(process.env.VUE_APP_SERVER + '/login', {withCredentials: true}));
         if(response.data.authorized){
-            this.$router.push({path: 'statistics'});
+             this.$router.push({path: '/profile'});
         }
     },
     data: function(){
@@ -27,14 +27,14 @@ export default {
             const params = new URLSearchParams();
             params.append('username', this.username);
             params.append('password', this.password);
-            const response = (await this.axios.post('http://localhost:3000/login',
+            const response = (await this.axios.post(process.env.VUE_APP_SERVER + '/login',
             params,
             {
                 headers: {'Content-Type': 'application/x-www-form-urlencoded '},
                 withCredentials: true,
             }));
             if(response.status === 200){
-                this.$router.push({ path: '/statistics' })
+                this.$router.push({ path: '/profile' })
             }
             
         }
