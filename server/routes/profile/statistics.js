@@ -12,9 +12,9 @@ router.get('/statistics', Profile.historyInRange(), Profile.statisticsFromHistor
     }
 });
 
-router.put('/statistics', Profile.historyInRange(), Profile.statisticsFromHistory(), ctx => {
-    ctx.body = 'Statistics updated';
-})
+// router.put('/statistics', Profile.historyInRange(), Profile.statisticsFromHistory(), ctx => {
+//     ctx.body = 'Statistics updated';
+// })
 
 router.get('/history', Profile.historyInRange(), ctx => {
     ctx.body = {
