@@ -3,11 +3,11 @@
 </template>
 
 <script>
+import axios from 'axios'
 export default {
-    async beforeCreate(){
-        const response = await this.axios.get('http://localhost:3000/logout', {withCredentials: true});
-        console.log(response);
-        this.$router.push({path: '/login'});
+    async beforeRouteEnter(to, from, next){
+        await axios.get('http://localhost:3000/logout', {withCredentials: true});
+        next('/login');
     }
 }
 </script>

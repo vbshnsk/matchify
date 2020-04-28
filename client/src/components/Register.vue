@@ -1,22 +1,19 @@
 <template>
-    <div class="login-form">
-        <form @submit="submited">
+    <div class="form-container">
+        <h1>Matchify</h1>
+        <form @submit.prevent>
+            <h2>Register</h2> <br>
             <input v-model="username" placeholder="Username"> <br>
             <input v-model="email" placeholder="Email"> <br>
             <input v-model="password" type="password" placeholder="Password"> <br>
-            <input type="submit">
+            <button @click="submited()"> Register </button>
+            <h3>Already have an account? <a href="/login"> Login </a></h3>
         </form>
     </div>
 </template>
 
 <script>
 export default {
-    async beforeCreate() {
-        const response = (await this.axios.get('http://localhost:3000/login', {withCredentials: true}));
-        if(response.data.authorized){
-            this.$router.push({path: '/profile'});
-        }
-    },
     data: function(){
         return{
             username: '',
@@ -30,17 +27,21 @@ export default {
             params.append('username', this.username);
             params.append('password', this.password);
             params.append('email', this.email);
-            const response = (await this.axios.post('http://localhost:3000/register',
+            const response = (await this.axios.post(process.env.VUE_APP_SERVER + '/register',
             params,
             {
                 headers: {'Content-Type': 'application/x-www-form-urlencoded '},
                 withCredentials: true,
             }));
             if(response.status === 200){
-                this.$router.push({ path: '/statistics' })
+                this.$router.push({ path: '/profile' })
             }
             
         }
     }
 }
 </script>
+
+<style>
+
+</style>

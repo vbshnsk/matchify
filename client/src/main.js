@@ -10,6 +10,24 @@ Vue.use(VueRouter);
 Vue.use(Vuex)
 Vue.use(VueAxios, axios);
 
+const store = new Vuex.Store({
+  state: {
+    auth: false,
+    username: '',
+  },
+  mutations: {
+    getAuthentication(state, data){
+      state.auth = data.authorized;
+      state.username = data.username;
+    }
+  },
+  actions: {
+    async fetchSession({ commit }){
+      const res = await (axios.get(process.env.VUE_APP_SERVER + '/login', {withCredentials: true}));
+      commit('getAuthentication', res.data);
+    }
+  }
+})
 
 import Login from './components/Login'
 import Register from './components/Register'
@@ -30,33 +48,52 @@ const profileChildrenPaths = [
   }
 ]
 
-const routes = [
-  { path: '/login', component: Login },
-  { path: '/register', component: Register },
-  { path: '/profile', component: Profile,
-    children: profileChildrenPaths },
-  { path: '/profile/:username', component: Profile,
-     children: profileChildrenPaths },
-  { path: '/spotify', component: Spotify },
-  { path: '/spotify_back', component: SpotifyLogin },
-  { path: '/logout', component: Logout },
-  { path: '*', component: NotFound },
+const secureProfileChildrenPaths = [
+  {
+    path: 'spotify', component: Spotify,
+  },
+  {
+    path: 'spotify_back', component: SpotifyLogin,
+  },
 ]
 
-// const store = new Vuex.Store({
-//   state: {
-//     apiHost: 'http://localhost:3000'
-//   }
-// })
+const routes = [
+  { path: '/login', component: Login, },
+  { path: '/register', component: Register },
+  { path: '/profile', component: Profile,
+    children: [...profileChildrenPaths, ...secureProfileChildrenPaths],
+    meta: { secure: true, root: true }},
+  { path: '/profile/:username', component: Profile,
+     children: profileChildrenPaths,
+     meta: {root: true},
+   },
+  { path: '/logout', component: Logout },
+  { path: '/', redirect: '/profile'},
+  { path: '*', component: NotFound },
+]
 
 const router = new VueRouter({
   mode: 'history',
   routes
 });
 
+router.beforeEach(async (to, from, next) => {
+  await store.dispatch('fetchSession');
+  const auth = store.state.auth;
+  if(to.matched.some(r => r.meta.secure)){
+    if(!auth) next('/login');
+    else next();
+  }
+  else if (to.path === '/login' || to.path === '/register'){
+    if(!auth) next();
+    else next('/profile')
+  }
+  else next();
+})
+
 
 new Vue({
   router,
-  //store,
+  store,
   render: h => h(App),
 }).$mount('#app')
