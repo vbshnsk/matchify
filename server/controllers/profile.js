@@ -2,6 +2,7 @@
 
 const Track = require('../models/track');
 const Taste = require('../models/taste');
+const User = require('../models/user')
 
 /**
  * 
@@ -69,8 +70,9 @@ const statisticsFromHistory = () => {
     }
 }
 
-const isAuthorized = () => {
+const exists = () => {
     return async (username, ctx, next) => {
+        console.log(username);
         if(username === 'me'){
             if(ctx.session.authorized){
                 ctx.state.username = ctx.session.username;
@@ -81,8 +83,14 @@ const isAuthorized = () => {
              }
         }
         else {
-            ctx.state.username = username;
-            await next();
+            const user = await User.selectOneByUsername(username)
+            if(user){
+                ctx.state.username = username;
+                await next();
+            }
+            else {
+                ctx.status = 404;
+            }
         }
     }
 }
@@ -90,5 +98,5 @@ const isAuthorized = () => {
 module.exports = { 
     historyInRange,
     statisticsFromHistory,
-    isAuthorized,
+    exists,
  };

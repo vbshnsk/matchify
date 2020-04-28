@@ -6,11 +6,9 @@ const Router = require('koa-router');
 const router = new Router();
 
 router.get('/spotify', Spotify.authorize());
-router.get('/spotify_back', Spotify.login(), Spotify.startListening(), ctx =>{
+
+router.post('/spotify', Spotify.login(), Spotify.getRecentData(), Spotify.startListening(), ctx =>{
     ctx.body = "Success";
 });
-router.get('/spotify_history', Spotify.getRecentData(), ctx =>{
-    ctx.body = "hi"
-})
 
 module.exports = router;

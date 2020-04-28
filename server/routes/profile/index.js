@@ -10,12 +10,12 @@ const spotify = require('./spotify').routes();
 
 router.prefix('/profile/:username');
 
-router.param('username', Profile.isAuthorized());
+router.param('username', Profile.exists());
 
 router.get('/', (ctx, next) => {
     ctx.body = ctx.state;
 })
 
-router.use(spotify, statistics);
+router.use(statistics, spotify);
 
 module.exports = router;
