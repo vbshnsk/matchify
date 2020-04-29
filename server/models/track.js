@@ -72,7 +72,8 @@ class Track {
         select "Track".* from "Play" 
         join "Track" on "Play".trackid = "Track".trackid
         join "User" on "Play".userid = "User".userid
-        where username=$1 and (listenedon>$2 and listenedon<$3)`, [username, from, to]);
+        where username=$1 and (listenedon>$2 and listenedon<$3)
+        order by listenedon desc`, [username, from, to]);
     }
 
     static async getMainGenres(genres){

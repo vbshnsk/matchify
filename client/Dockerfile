@@ -4,20 +4,13 @@ WORKDIR /app
 
 COPY package*.json ./
 
-ARG NODE_ENV
-
-ENV NODE_ENV ${NODE_ENV}
-
-RUN if [ "$NODE_ENV" = "development" ]; \
-    then npm install; \
-    else npm install --only=production; \
-    fi;
+RUN npm install
 
 COPY . .
 
 EXPOSE 8080
 
-RUN npm build;
+RUN npm run build;
 
 FROM nginx as production
 

@@ -24,6 +24,7 @@ export default {
             const params = new URLSearchParams();
             params.append('username', this.username);
             params.append('password', this.password);
+            console.log(process.env.VUE_APP_SERVER);
             const response = (await this.axios.post(process.env.VUE_APP_SERVER + '/login',
             params,
             {

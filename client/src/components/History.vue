@@ -3,14 +3,14 @@
         <h2>Recent history:</h2>
         <div id="history">
             <li class="flex header">
-                <h2> Track </h2>
                 <h2> Artists </h2>
+                <h2> Track </h2>
                 <h2> Genres </h2>
             </li>
             <li class="flex row" v-for="play in history" v-bind:key="play.id">
-                <h3> {{play.artists.join(',')}} </h3>
+                <h3> {{play.artists.join(', ')}} </h3>
                 <h3> {{play.name}} </h3>
-                <h3> {{play.genres.join(',')}} </h3>
+                <h3> {{play.genres.join(', ')}} </h3>
             </li>
         </div>
     </div>

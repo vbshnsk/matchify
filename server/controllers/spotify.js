@@ -16,7 +16,6 @@ const http = require('http');
 
 const authorize = () => {
     return async ctx => {
-        console.log(ctx.session)
         const user = await User.selectOneByID(ctx.session.userid);
         const auth = new SpotifyApi(credentials);
         const scopes = ['user-read-private', 'user-read-playback-state', 'user-read-recently-played'];
@@ -133,7 +132,7 @@ const listenToStreams = (spotify, userid) => {
                 await refreshCredentials(spotify, userid);
             }
         }
-    }, 10000);
+    }, 30000);
 };
 
 
