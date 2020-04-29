@@ -16,7 +16,11 @@ const getSession = async key => (await pool.query(`select * from session where "
 const destroySession = async key => await pool.query(`delete from session where "sessionid"=$1`, [key]);
 
 module.exports = {
-    query: (text, params) => pool.query(text, params),
+    query: async (text, params) => {
+      const res = await pool.query(text, params);
+      console.log({query: text.text, params: params, rows: res.rowCount});
+      return res;
+    },
     sql,
     storeOptions: {
       get: getSession,
