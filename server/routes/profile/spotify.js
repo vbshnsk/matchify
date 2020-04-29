@@ -7,7 +7,7 @@ const router = new Router();
 
 router.get('/spotify', Spotify.authorize());
 
-router.post('/spotify', Spotify.login(), Spotify.getRecentData(), Spotify.startListening(), ctx =>{
+router.get('/spotify_login', Spotify.login(), Spotify.getRecentData(), Spotify.startListening(), ctx =>{
     ctx.body = "Success";
 });
 

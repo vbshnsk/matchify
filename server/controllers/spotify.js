@@ -4,7 +4,7 @@ const Track = require('../models/track');
 const User = require('../models/user');
 const SpotifyApi = require('spotify-web-api-node');
 const credentials = {
-    redirectUri: 'http://localhost:8080/profile/spotify_back',
+    redirectUri: process.env.CLIENT + '/profile/spotify',
     clientId: process.env.CLIENT_ID,
     clientSecret: process.env.CLIENT_SECRET,
 }
@@ -16,6 +16,7 @@ const http = require('http');
 
 const authorize = () => {
     return async ctx => {
+        console.log(ctx.session)
         const user = await User.selectOneByID(ctx.session.userid);
         const auth = new SpotifyApi(credentials);
         const scopes = ['user-read-private', 'user-read-playback-state', 'user-read-recently-played'];

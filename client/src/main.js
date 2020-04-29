@@ -31,42 +31,15 @@ const store = new Vuex.Store({
 
 import Login from './components/Login'
 import Register from './components/Register'
-import Statistics from './components/Statistics'
-import ListeningHistory from './components/History'
-import Profile from './components/Profile'
-import Logout from './components/Logout'
-import Spotify from './components/Spotify'
-import SpotifyLogin from './components/Spotify.login'
+import Logout from './components/Logout'  
 import NotFound from './components/NotFound'
+import ProfileRoutes from './routes/profile'
 
-const profileChildrenPaths = [
-  {
-    path: 'statistics', component: Statistics,
-  },
-  {
-    path: 'history', component: ListeningHistory
-  }
-]
-
-const secureProfileChildrenPaths = [
-  {
-    path: 'spotify', component: Spotify,
-  },
-  {
-    path: 'spotify_back', component: SpotifyLogin,
-  },
-]
 
 const routes = [
+  ...ProfileRoutes,
   { path: '/login', component: Login, },
   { path: '/register', component: Register },
-  { path: '/profile', component: Profile,
-    children: [...profileChildrenPaths, ...secureProfileChildrenPaths],
-    meta: { secure: true, root: true }},
-  { path: '/profile/:username', component: Profile,
-     children: profileChildrenPaths,
-     meta: {root: true},
-   },
   { path: '/logout', component: Logout },
   { path: '/', redirect: '/profile'},
   { path: '*', component: NotFound },
@@ -78,8 +51,22 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+
   await store.dispatch('fetchSession');
   const auth = store.state.auth;
+
+  if(to.matched.some(r => r.meta.profileMustExist)){
+    if(to.params.username === store.state.username) next('/profile')
+    else
+      try{
+        await axios.get(process.env.VUE_APP_SERVER + '/profile/' + to.params.username);
+        next();
+      }
+      catch(error){
+        next('/404');
+      }
+  }
+
   if(to.matched.some(r => r.meta.secure)){
     if(!auth) next('/login');
     else next();

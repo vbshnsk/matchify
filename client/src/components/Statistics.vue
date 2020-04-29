@@ -40,7 +40,7 @@ export default {
             vm.genres = response.data.genres;
             vm.taste = response.data.taste;
         })
-        }catch (error){
+        } catch (error){
             next('/404');
         }
     },
