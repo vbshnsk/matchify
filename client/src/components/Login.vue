@@ -4,7 +4,7 @@
         <form @submit.prevent>
             <h2>Login</h2> <br>
             <input v-model="username" placeholder="Username"><br>
-            <input v-model="password" placeholder="Password"><br>
+            <input v-model="password" placeholder="Password" type="password"><br>
             <button @click="submited()"> Login </button>
             <h3>Don't have an account? <a href="/register"> Register </a></h3>
         </form>

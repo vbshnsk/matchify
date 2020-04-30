@@ -10,7 +10,7 @@ const User = require('../models/user')
 
 const validate = data => {
     const usernameMatcher =  /^[a-z0-9_-]{3,16}$/;
-    const passwordMatcher = /^(?=.*\d)(?=.*[a-z])[0-9a-zA-Z]{8,}$/; 
+    const passwordMatcher = /^(?=.*\d)(?=.*[a-z])[0-9a-zA-Z]{8,}$/;
     if (usernameMatcher.test(data.username) &&
         passwordMatcher.test(data.password)) {
             return Object.assign({}, data);

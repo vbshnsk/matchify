@@ -11,7 +11,7 @@ const credentials = {
 const http = require('http');   
 
 /**
- * Generate Spotify authorization link and redirect user.
+ * Generate Spotify authorization link.
  */
 
 const authorize = () => {
@@ -41,6 +41,11 @@ const login = () => {
     }
 }
 
+/**
+ * Returns a SpotifyAPI instance with current user's credentials from the database
+ * @param {String} userid 
+ */
+
 const getSpotifyInstance = async (userid) => {
     const tokens = (await User.selectOneByID(userid, "spotify")).spotify;
     const spotify = new SpotifyApi(credentials);
@@ -48,6 +53,13 @@ const getSpotifyInstance = async (userid) => {
     spotify.setAccessToken(tokens.access);
     return spotify;
 }
+
+/**
+ * Inserts User's Play into the DB
+ * @param {String} userid 
+ * @param {Track} track 
+ * @param {Date} timestamp
+ */
 
 const insertPlay = async (userid, track, timestamp) => {
     let trackid = await Track.getID({spotifyid: track.spotifyid});
@@ -57,6 +69,10 @@ const insertPlay = async (userid, track, timestamp) => {
     }
     await Track.insertPlay(trackid, userid, timestamp);
 }
+
+/**
+ * Returns the most recent 50 tracks User has played.
+ */
 
 const getRecentData = () => {
     return async (ctx, next) => {
@@ -118,16 +134,19 @@ const getCurrentTrack = async (spotify) => {
  */
 
 const listenToStreams = (spotify, userid) => {
+    let current;
     setInterval(async function(){
         try {
             const trackInfo = await getCurrentTrack(spotify);
+            console.log(userid, trackInfo);
             if (trackInfo === undefined) return;
             const track = trackInfo.track;
-            if(this.current !== trackInfo.timestamp){
-                this.current = trackInfo.timestamp;
+            if(current !== trackInfo.timestamp){
+                current = trackInfo.timestamp;
                 await insertPlay(userid, track, new Date(trackInfo.timestamp));
             }
         } catch (error) {
+            console.log(error);
             if (error.message === 'Unauthorized'){
                 await refreshCredentials(spotify, userid);
             }
@@ -181,9 +200,14 @@ const setGenres = async (track) => {
     const trackQuery = `http://ws.audioscrobbler.com/2.0/?method=track.gettoptags&artist=${artist}&track=${name}&api_key=${process.env.LAST_API}&format=json`;
     const artistQuery = `http://ws.audioscrobbler.com/2.0/?method=artist.gettoptags&artist=${artist}&api_key=${process.env.LAST_API}&format=json`;
 
-    let genres = await fetchTags(trackQuery);
-    if(genres.length === 0) genres = await fetchTags(artistQuery);
-    return genres;
+    try {
+        let genres = await fetchTags(trackQuery);
+        if(genres.length === 0) genres = await fetchTags(artistQuery);
+        return genres;
+    } catch (error) {
+        console.log(error);
+        return [];
+    }
 }
 
 module.exports = {

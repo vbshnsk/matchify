@@ -5,7 +5,7 @@ const Taste = require('../models/taste');
 const User = require('../models/user')
 
 /**
- * 
+ * Calculate the Taste based on what User has played
  * @param {[Track]} plays 
  * 
  */
@@ -23,7 +23,7 @@ const calculateTaste = async (plays) => {
 }
 
 /**
- * 
+ * Claculate the number of different genres the User has played
  * @param {[Track]} plays 
  * 
  */
@@ -42,6 +42,11 @@ const calculateGenrePlays = (plays) => {
     return top;
 }
 
+/**
+ * Returns current request User's history of Plays
+ * @param {Date} from 
+ * @param {Date} to 
+ */
 
 const historyInRange = (from, to) => {
     return async (ctx, next) => {
@@ -70,9 +75,14 @@ const statisticsFromHistory = () => {
     }
 }
 
+/**
+ * Existence of requested User's profile in database middleware.
+ * if requested profile is own, checks if User is authorized else sends 401
+ * if requested User does not exist, sends 404 
+ */
+
 const exists = () => {
     return async (username, ctx, next) => {
-        console.log(username);
         if(username === 'me'){
             if(ctx.session.authorized){
                 ctx.state.username = ctx.session.username;
