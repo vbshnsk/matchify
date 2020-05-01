@@ -48,9 +48,11 @@ const login = () => {
 
 const getSpotifyInstance = async (userid) => {
     const tokens = (await User.selectOneByID(userid, "spotify")).spotify;
-    const spotify = new SpotifyApi(credentials);
+    const spotify = new SpotifyApi();
     spotify.setRefreshToken(tokens.refresh);
     spotify.setAccessToken(tokens.access);
+    spotify.setClientId(process.env.CLIENT_ID);
+    spotify.setClientSecret(process.env.CLIENT_SECRET);
     return spotify;
 }
 
@@ -135,10 +137,9 @@ const getCurrentTrack = async (spotify) => {
 
 const listenToStreams = (spotify, userid) => {
     let current;
-    setInterval(async function(){
+    setInterval(async function(spotify){
         try {
             const trackInfo = await getCurrentTrack(spotify);
-            console.log(userid, trackInfo);
             if (trackInfo === undefined) return;
             const track = trackInfo.track;
             if(current !== trackInfo.timestamp){
@@ -151,7 +152,7 @@ const listenToStreams = (spotify, userid) => {
                 await refreshCredentials(spotify, userid);
             }
         }
-    }, 30000);
+    }, 30000, spotify);
 };
 
 

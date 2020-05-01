@@ -18,7 +18,7 @@ const destroySession = async key => await pool.query(`delete from session where 
 module.exports = {
     query: async (text, params) => {
       const res = await pool.query(text, params);
-      console.log({query: text.text, params: params, rows: res.rowCount});
+      console.log({query: text.text || text, params: text.values || params, rows: res.rowCount});
       return res;
     },
     sql,
