@@ -2,7 +2,9 @@
 
 const Track = require('../models/track');
 const Taste = require('../models/taste');
-const User = require('../models/user')
+const User = require('../models/user');
+const AWS = require('aws-sdk');
+const fs = require('fs');
 
 /**
  * Calculate the Taste based on what User has played
@@ -50,26 +52,29 @@ const calculateGenrePlays = (plays) => {
 
 const historyInRange = (from, to) => {
     return async (ctx, next) => {
-        const username = ctx.state.username;
+        const username = ctx.state.profile.username;
         const plays = (await Track.getPlaysInRange(username, {from, to})).rows;
 
-        ctx.state.history = plays;
+        ctx.state.profile.history = plays;
         await next();
     }
 }
 
-/**
- * 
- * @param {number} days
- * 
- */
+const updateTaste = () => {
+    return async (ctx, next) => {
+        const plays = ctx.state.profile.history;
+        const taste = await calculateTaste(plays)
 
-const statisticsFromHistory = () => {
-    return async (ctx, next) =>{
-        const plays = ctx.state.history;
+        Taste.update(ctx.state.profile.username, taste);
+        ctx.state.profile.taste = taste;
+        await next();
+    }
+}
 
-        ctx.state.taste = await calculateTaste(plays);
-        ctx.state.genres = calculateGenrePlays(plays);
+const genresFromHistory = () => {
+    return async (ctx, next) => {
+        const plays = ctx.state.profile.history;
+        ctx.state.profile.genres = calculateGenrePlays(plays);
         
         await next();
     }
@@ -85,7 +90,7 @@ const exists = () => {
     return async (username, ctx, next) => {
         if(username === 'me'){
             if(ctx.session.authorized){
-                ctx.state.username = ctx.session.username;
+                ctx.state.profile = await User.getProfileInfo(ctx.session.username);
                 await next();
             }
             else {
@@ -105,8 +110,45 @@ const exists = () => {
     }
 }
 
+const isProtected = () => {
+    return async (ctx, next) => {
+        if (ctx.session.authorized && ctx.state.profile.username === ctx.session.username) {
+            await next();
+        }
+        else {
+            ctx.status = 401;
+        }
+    }
+}
+
+const uploadPhotos = () => {
+    return async (ctx, next) => {
+        const username = ctx.session.username;
+        const toUpload = [].concat(ctx.request.files.photos);
+        const s3 = new AWS.S3();
+        let photos = ctx.state.profile.profilephotos || [];
+        let n = photos.length;
+        for(const photo of toUpload){
+            const rs = fs.createReadStream(photo.path); 
+            const name = "profile/" + username + '/photo'+ n + '.png';
+            await s3.upload({
+                Bucket: 'matchify',
+                Body: rs,
+                Key: name,
+            }).promise();
+            photos = [...photos, name];
+            await User.updateById(ctx.session.userid, { profilephotos: photos });
+            n++;
+        }
+        await next();
+    }
+}
+
 module.exports = { 
     historyInRange,
-    statisticsFromHistory,
+    genresFromHistory,
+    updateTaste,
     exists,
+    isProtected,
+    uploadPhotos,
  };

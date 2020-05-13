@@ -5,16 +5,16 @@ const Router = require('koa-router');
 
 const router = new Router();
 
-router.get('/statistics', Profile.historyInRange(), Profile.statisticsFromHistory(), ctx => {
+router.get('/statistics', Profile.historyInRange(), Profile.genresFromHistory(), ctx => {
     ctx.body = {
-        taste: ctx.state.taste,
-        genres: ctx.state.genres,
+        taste: ctx.state.profile.taste,
+        genres: ctx.state.profile.genres,
     }
 });
 
-// router.put('/statistics', Profile.historyInRange(), Profile.statisticsFromHistory(), ctx => {
-//     ctx.body = 'Statistics updated';
-// })
+router.put('/statistics', Profile.historyInRange(), Profile.updateTaste(), ctx => {
+    ctx.body = {taste: ctx.state.profile.taste };
+});
 
 router.get('/history', Profile.historyInRange(), ctx => {
     ctx.body = {
