@@ -32,7 +32,7 @@ const store = new Vuex.Store({
 import Login from './components/Login'
 import Register from './components/Register'
 import Logout from './components/Logout'  
-import Images from './components/PhotoUpload'
+//import Images from './components/PhotoUpload'
 import NotFound from './components/NotFound'
 import ProfileRoutes from './routes/profile'
 
@@ -43,7 +43,7 @@ const routes = [
   { path: '/register', component: Register },
   { path: '/logout', component: Logout },
   { path: '/', redirect: '/profile' },
-   {path: '/test', component: Images },
+  //{path: '/test', component: Images },
   { path: '*', component: NotFound },
 ]
 
