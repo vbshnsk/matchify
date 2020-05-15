@@ -49,6 +49,7 @@ export default {
             day: '',
             month: '',
             year: '',
+            alert: false,
         }
     },
     methods:{
@@ -67,6 +68,9 @@ export default {
             }));
             if(response.status === 200){
                 this.$emit('success');
+            }
+            else {
+                this.alert = true;
             }
             
         }

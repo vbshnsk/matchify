@@ -93,7 +93,10 @@ const getRecentData = () => {
             new Date(val.played_at)
         ]);
 
-        history.forEach(async val => await insertPlay(userid, ...val))
+        for (const track of history) {
+            await insertPlay(userid, ...track);
+        }
+        
         await next();
     }
 }

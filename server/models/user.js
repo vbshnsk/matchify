@@ -73,11 +73,11 @@ class User {
 
     static async getProfileInfo(username){
         const profile = (await db.query(db.sql`
-        select username, email, bio, gender, city, profilephotos
+        select username, email, bio, gender, city, profilephotos, birthdate
         from "User"
         where username=${username}`)).rows[0];
         profile['taste'] = (await db.query(db.sql`
-        select classical, rock, pop, "r&b", "hip-hop", country, jazz, electronic, latin, folk, blues
+        select classical, rock, pop, "r&b", "hip hop", country, jazz, electronic, latin, folk, blues
         from "Taste"
         where username=${profile.username}
         `)).rows[0];

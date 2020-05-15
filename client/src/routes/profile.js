@@ -11,7 +11,7 @@ const profileChildrenPaths = [
       path: 'history', component: ListeningHistory
     }
   ]
-  
+
 const secureProfileChildrenPaths = [
     {
       path: 'spotify', component: Spotify,
@@ -21,7 +21,8 @@ const secureProfileChildrenPaths = [
 const routes = [
     { path: '/profile', component: Profile,
     children: [...profileChildrenPaths, ...secureProfileChildrenPaths],
-    meta: { secure: true, root: true}},
+    meta: { secure: true, root: true},
+    spathToRegexpOptions: { strict: true }},
 
     { path: '/profile/:username', component: Profile,
     children: profileChildrenPaths,

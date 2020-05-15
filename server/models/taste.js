@@ -11,7 +11,7 @@ class Taste {
         this['classical'] = classical;
         this['rock'] = rock;
         this['pop'] = pop;
-        this['hip-hop'] = hiphop;
+        this['hip hop'] = hiphop;
         this['r&b'] = rnb;
         this['country'] = country;
         this['jazz'] = jazz;

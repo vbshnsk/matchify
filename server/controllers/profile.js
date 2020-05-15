@@ -15,6 +15,7 @@ const fs = require('fs');
 const calculateTaste = async (plays) => {
     const stats = new Taste();
     const maingenres = await Promise.all(plays.map(val => Track.getMainGenres(val.genres)));
+
     maingenres.map(val => 
         val.reduce((accum, val) => {
             accum[val]++;
@@ -55,14 +56,14 @@ const historyInRange = (from, to) => {
         const username = ctx.state.profile.username;
         const plays = (await Track.getPlaysInRange(username, {from, to})).rows;
 
-        ctx.state.profile.history = plays;
+        ctx.state.history = plays;
         await next();
     }
 }
 
 const updateTaste = () => {
     return async (ctx, next) => {
-        const plays = ctx.state.profile.history;
+        const plays = ctx.state.history;
         const taste = await calculateTaste(plays)
 
         Taste.update(ctx.state.profile.username, taste);
@@ -73,7 +74,7 @@ const updateTaste = () => {
 
 const genresFromHistory = () => {
     return async (ctx, next) => {
-        const plays = ctx.state.profile.history;
+        const plays = ctx.state.history;
         ctx.state.profile.genres = calculateGenrePlays(plays);
         
         await next();
@@ -100,7 +101,7 @@ const exists = () => {
         else {
             const user = await User.selectOneByUsername(username)
             if(user){
-                ctx.state.username = username;
+                ctx.state.profile = await User.getProfileInfo(user.username);
                 await next();
             }
             else {

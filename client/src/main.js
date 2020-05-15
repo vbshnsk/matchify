@@ -53,12 +53,11 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-
   await store.dispatch('fetchSession');
   const auth = store.state.auth;
 
   if(to.matched.some(r => r.meta.profileMustExist)){
-    if(to.params.username === store.state.username) next('/profile')
+    if(to.params.username === store.state.username) next('/profile');
     else
       try{
         await axios.get(process.env.VUE_APP_SERVER + '/profile/' + to.params.username);
@@ -68,14 +67,13 @@ router.beforeEach(async (to, from, next) => {
         next('/404');
       }
   }
-
-  if(to.matched.some(r => r.meta.secure)){
+  else if(to.matched.some(r => r.meta.secure)){
     if(!auth) next('/login');
     else next();
   }
   else if (to.path === '/login' || to.path === '/register'){
     if(!auth) next();
-    else next('/profile')
+    else next('/profile');
   }
   else next();
 })
