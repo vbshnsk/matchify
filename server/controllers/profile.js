@@ -145,6 +145,14 @@ const uploadPhotos = () => {
     }
 }
 
+const updateProfile = () => {
+    return async (ctx, next) => {
+        const id = ctx.session.userid;
+        await User.updateById(id, ctx.request.body);
+        await next();
+    }
+}
+
 module.exports = { 
     historyInRange,
     genresFromHistory,
@@ -152,4 +160,5 @@ module.exports = {
     exists,
     isProtected,
     uploadPhotos,
+    updateProfile,
  };

@@ -1,9 +1,11 @@
 'use strict'
 
-const Auth = require('./auth').routes();
-const Profile = require('./profile').routes();
+const Auth = require('./auth');
+const Profile = require('./profile');
 
 module.exports = app => {
-    app.use(Auth);
-    app.use(Profile);
+    app.use(Auth.routes());
+    app.use(Auth.allowedMethods())
+    app.use(Profile.routes());
+    app.use(Profile.allowedMethods());
 }

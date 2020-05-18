@@ -16,6 +16,7 @@ app.use(async (ctx, next) => {
     ctx.set('Access-Control-Allow-Origin', process.env.CLIENT);
     ctx.set('Access-Control-Allow-Credentials', true);
     ctx.set('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE');
+    ctx.set('Access-Control-Allow-Headers', "Origin, X-Requested-With, Content-Type, Accept")
     await next();
 })
 

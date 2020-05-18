@@ -18,6 +18,10 @@ router.get('/', (ctx, next) => {
     ctx.body = ctx.state;
 })
 
+router.put('/', bodyParser(), Profile.isProtected(), Profile.updateProfile(), ctx => {
+    ctx.status = 200;
+})
+
 router.get('/photos', ctx => {
     ctx.body = ctx.state.profile.photos;
 })

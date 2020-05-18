@@ -73,7 +73,7 @@ class User {
 
     static async getProfileInfo(username){
         const profile = (await db.query(db.sql`
-        select username, email, bio, gender, city, profilephotos, birthdate
+        select username, displayname, email, bio, gender, city, profilephotos, birthdate
         from "User"
         where username=${username}`)).rows[0];
         profile['taste'] = (await db.query(db.sql`
@@ -83,6 +83,7 @@ class User {
         `)).rows[0];
         return profile;
     }
+
 
 
 }
