@@ -18,11 +18,13 @@
                     <img v-else src="/ph.png">
                 </div>
                 <div id="info-container">
+                    <h1> {{ profile.displayname }}</h1>
                     <h2> @{{ profile.username }} </h2>
                     <h3> {{ age }}, {{ profile.gender }} </h3>
                     <h3> {{ profile.city }} </h3>
-                    <h1 v-if="spotify === 'authorized'"> You're authorized to spotify! </h1>
-                    <h1 v-else>To login to Spotify follow the link: <a v-bind:href="spotify">link</a></h1>
+                    <p> {{ profile.bio }} </p>
+                    <h3 v-if="spotify === 'authorized'"> You're authorized to spotify! </h3>
+                    <h3 v-else>To login to Spotify follow the link: <a v-bind:href="spotify">link</a></h3>
                 </div>
             </div>
         </div>

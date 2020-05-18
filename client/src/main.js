@@ -29,9 +29,9 @@ const store = new Vuex.Store({
   }
 })
 
-import Login from './components/Login'
-import Register from './components/Register'
-import Logout from './components/Logout'  
+import Login from './components/account/Login'
+import Register from './components/account/Register'
+import Logout from './components/account/Logout'  
 //import Images from './components/PhotoUpload'
 import NotFound from './components/NotFound'
 import ProfileRoutes from './routes/profile'

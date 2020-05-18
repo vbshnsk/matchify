@@ -1,7 +1,7 @@
-import Statistics from '../components/Statistics'
-import ListeningHistory from '../components/History'
-import Profile from '../components/Profile'
-import Spotify from '../components/Spotify'
+import Statistics from '../components/profile/Statistics'
+import ListeningHistory from '../components/profile/History'
+import Profile from '../components/profile/Profile'
+import Spotify from '../components/profile/Spotify'
 
 const profileChildrenPaths = [
     {

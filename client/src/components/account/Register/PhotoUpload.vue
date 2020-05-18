@@ -63,7 +63,7 @@ export default {
             this.$refs.cropper.getCroppedCanvas().toBlob(blob => this.images = [...this.images, blob]);
         },
         skip() {
-            this.$router.push({ path: '/profile' });
+            this.$emit('success');
         },
         async upload(){
             const params = new FormData();
@@ -77,7 +77,7 @@ export default {
                 withCredentials: true,
             }));
             if(response.status === 200) {
-                this.$router.push({ path: '/profile' });
+                this.$emit('success');
             }
         }
     }

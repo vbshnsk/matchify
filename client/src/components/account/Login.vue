@@ -40,6 +40,10 @@ export default {
 
 <style lang="postcss">
 
+.flex {
+    display: flex;
+}
+
 .form-container {
     display: flex;
     flex-direction: column;
@@ -73,7 +77,7 @@ export default {
             width: 18vw;
             min-height: 60px;
         }
-        input, select {
+        input, select, textarea {
             background: rgba(34, 34, 34, 0.575);
             border-radius: 100px;
             outline: none;
