@@ -27,7 +27,7 @@ export default {
             const response = (await this.axios.post(process.env.VUE_APP_SERVER + '/login',
             params,
             {
-                headers: {'Content-Type': 'application/x-www-form-urlencoded '},
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                 withCredentials: true,
             }));
             if(response.status === 200){

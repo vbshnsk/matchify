@@ -73,7 +73,7 @@ class User {
 
     static async getProfileInfo(username){
         const profile = (await db.query(db.sql`
-        select username, displayname, email, bio, gender, city, profilephotos, birthdate
+        select username, displayname, email, bio, gender, city, profilephotos, birthdate, preference
         from "User"
         where username=${username}`)).rows[0];
         profile['taste'] = (await db.query(db.sql`
@@ -84,7 +84,54 @@ class User {
         return profile;
     }
 
+    static async getClosestMatches(username, genresAndRange, dateAgeFrom, dateAgeTo, preference){
+        const preferenceQuery = preference === "anyone" ? "" : preference === "men" ? "gender <> 'female'" : "gender <> 'male'";
+        const matches = (await db.query(db.sql`
+        select "User".username, displayname, profilephotos, bio, city
+        from "Taste"
+        join "User"
+        on "User".username = "Taste".username
+        where 
+        $raw${genresAndRange[0]} between ${genresAndRange[1]} and ${genresAndRange[2]} and
+        $raw${genresAndRange[3]} between ${genresAndRange[4]} and ${genresAndRange[5]} and
+        $raw${genresAndRange[6]} between ${genresAndRange[7]} and ${genresAndRange[8]} and
+        $raw${preferenceQuery} and
+        "User".username not in (
+            select match
+            from "Match"
+            where username = ${username}
+        ) and
+        "User".username <> ${username}
+        order by $raw${genresAndRange[0]}, $raw${genresAndRange[3]}, $raw${genresAndRange[6]} desc`)).rows;
+        return matches;
+    }
 
+    static async getMatches(username) {
+        const matches = (await db.query(db.sql`
+        select "Match".match 
+        from "Match"
+        join "Match" M
+        on
+        "Match".username = M.match and
+        "Match".match = M.username
+        where "Match".username = ${username}
+        `)).rows;
+        return matches;
+    }
+
+    static async addMatch(username, match) {
+        const isAMatch = (await db.query(`
+        select *
+        from "Match"
+        where 
+        username = $1 and 
+        match = $2`, [match, username])).rowCount > 0;
+        db.query(`
+        insert into 
+        "Match"(username, match) 
+        values ($1, $2)`, [username, match]);
+        return isAMatch;
+    }
 
 }
 

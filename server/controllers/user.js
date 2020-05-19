@@ -70,6 +70,7 @@ const register = () => {
 const logout = () => {
     return async (ctx, next) => {
         ctx.session.userid = undefined;
+        ctx.session.username = undefined;
     	ctx.session.authorized = false;
         await next();
     }

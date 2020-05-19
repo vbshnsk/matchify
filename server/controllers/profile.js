@@ -153,6 +153,36 @@ const updateProfile = () => {
     }
 }
 
+const getTopGenres = taste => Object.keys(taste)
+    .sort((a, b) => taste[b] - taste[a])
+    .splice(0, 3)
+    .reduce((prev, cur) => [...prev, cur, taste[cur] - 0.1, taste[cur] + 0.1], []);
+
+const getUserClosestMatches = () => {
+    return async (ctx, next) => {
+        const topGenres = getTopGenres(ctx.state.profile.taste);
+        const preference = ctx.state.profile.preference;
+        ctx.state.matches = await User.getClosestMatches(ctx.state.profile.username, topGenres, null, null, preference);
+        await next();
+    }
+}
+
+const getUserMatches = () => {
+    return async (ctx, next) => {
+        ctx.state.matches = await User.getMatches(ctx.state.profile.username);
+        await next();
+    } 
+}
+
+const addMatch = () => {
+    return async (ctx, next) => {
+        const match = ctx.request.body.match;
+        const username = ctx.state.profile.username;
+        ctx.state.isAMatch = await User.addMatch(username, match);
+        await next();
+    }
+}
+
 module.exports = { 
     historyInRange,
     genresFromHistory,
@@ -161,4 +191,7 @@ module.exports = {
     isProtected,
     uploadPhotos,
     updateProfile,
+    getUserClosestMatches,
+    getUserMatches,
+    addMatch,
  };
