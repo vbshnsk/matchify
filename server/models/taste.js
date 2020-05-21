@@ -6,13 +6,13 @@ class Taste {
     constructor(classical = 0, rock = 0, pop = 0,
                 hiphop = 0, rnb = 0, country = 0,
                 jazz = 0, electronic = 0, latin = 0,
-                folk = 0, blues = 0, userid = undefined){
+                folk = 0, blues = 0, userid){
 
         this['classical'] = classical;
         this['rock'] = rock;
         this['pop'] = pop;
-        this['hip hop'] = hiphop;
-        this['r&b'] = rnb;
+        this['hiphop'] = hiphop;
+        this['rnb'] = rnb;
         this['country'] = country;
         this['jazz'] = jazz;
         this['electronic'] = electronic;
@@ -48,7 +48,6 @@ class Taste {
     }
 
     static async update(username, data) {
-        console.log(data);
         (await db.query(db.sql`
         update "Taste"
         $set${data}

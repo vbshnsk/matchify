@@ -153,16 +153,32 @@ const updateProfile = () => {
     }
 }
 
-const getTopGenres = taste => Object.keys(taste)
+const getTopGenres = (taste, eps) => Object.keys(taste)
     .sort((a, b) => taste[b] - taste[a])
     .splice(0, 3)
-    .reduce((prev, cur) => [...prev, cur, taste[cur] - 0.1, taste[cur] + 0.1], []);
+    .reduce((prev, cur) => [...prev, cur, taste[cur] - eps, taste[cur] + eps], []);
 
 const getUserClosestMatches = () => {
     return async (ctx, next) => {
-        const topGenres = getTopGenres(ctx.state.profile.taste);
+        const eps = 0.5;
+        const topGenres = getTopGenres(ctx.state.profile.taste, eps);
         const preference = ctx.state.profile.preference;
-        ctx.state.matches = await User.getClosestMatches(ctx.state.profile.username, topGenres, null, null, preference);
+        const matches = await User.getClosestMatches(ctx.state.profile.username, topGenres, null, null, preference, eps);
+        for (const match of matches){
+            const taste = {}
+            for (const key in match) {
+                const genresArr = ['classical', 'rock', 'pop', 'hiphop', 'rnb', 'country', 'jazz', 'electronic', 'latin', 'folk', 'blues'];
+                if(genresArr.some(val => key === val)) {
+                    taste[key] = match[key];
+                    match[key] = undefined;
+                }
+            }
+            match.taste = taste;
+            const plays = (await Track.getPlaysInRange(match.username, {from: undefined, to: undefined})).rows;
+            match.plays = plays.slice(0, 10);
+            match.topGenres = calculateGenrePlays(plays).slice(0, 5);
+        }
+        ctx.state.matches = matches;
         await next();
     }
 }
@@ -183,6 +199,16 @@ const addMatch = () => {
     }
 }
 
+const addDitch = () => {
+    return async (ctx, next) => {
+        const ditch = ctx.request.body.ditch;
+        const username = ctx.state.profile.username;
+        await User.addDitch(username, ditch);
+        await next();
+    }
+}
+
+
 module.exports = { 
     historyInRange,
     genresFromHistory,
@@ -194,4 +220,5 @@ module.exports = {
     getUserClosestMatches,
     getUserMatches,
     addMatch,
+    addDitch,
  };

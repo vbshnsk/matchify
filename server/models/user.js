@@ -77,17 +77,17 @@ class User {
         from "User"
         where username=${username}`)).rows[0];
         profile['taste'] = (await db.query(db.sql`
-        select classical, rock, pop, "r&b", "hip hop", country, jazz, electronic, latin, folk, blues
+        select classical, rock, pop, rnb, hiphop, country, jazz, electronic, latin, folk, blues
         from "Taste"
         where username=${profile.username}
         `)).rows[0];
         return profile;
     }
 
-    static async getClosestMatches(username, genresAndRange, dateAgeFrom, dateAgeTo, preference){
-        const preferenceQuery = preference === "anyone" ? "" : preference === "men" ? "gender <> 'female'" : "gender <> 'male'";
+    static async getClosestMatches(username, genresAndRange, dateAgeFrom, dateAgeTo, preference, eps){
+        const preferenceQuery = preference === "anyone" ? "" : preference === "men" ? "gender <> 'female' and" : "gender <> 'male' and";
         const matches = (await db.query(db.sql`
-        select "User".username, displayname, profilephotos, bio, city
+        select "User".username, displayname, profilephotos, bio, city, gender, birthdate, "Taste".*
         from "Taste"
         join "User"
         on "User".username = "Taste".username
@@ -95,25 +95,37 @@ class User {
         $raw${genresAndRange[0]} between ${genresAndRange[1]} and ${genresAndRange[2]} and
         $raw${genresAndRange[3]} between ${genresAndRange[4]} and ${genresAndRange[5]} and
         $raw${genresAndRange[6]} between ${genresAndRange[7]} and ${genresAndRange[8]} and
-        $raw${preferenceQuery} and
+        $raw${preferenceQuery}
         "User".username not in (
             select match
             from "Match"
             where username = ${username}
         ) and
+        "User".username not in (
+            select ditch
+            from "Ditch"
+            where username = ${username}
+        ) and
         "User".username <> ${username}
-        order by $raw${genresAndRange[0]}, $raw${genresAndRange[3]}, $raw${genresAndRange[6]} desc`)).rows;
+        order by 
+        abs($raw${genresAndRange[0]} - $raw${genresAndRange[1] + eps}),
+        abs($raw${genresAndRange[3]} - $raw${genresAndRange[4] + eps}),
+        abs($raw${genresAndRange[6]} - $raw${genresAndRange[7] + eps}) asc
+        limit 50`)).rows;
         return matches;
     }
 
     static async getMatches(username) {
         const matches = (await db.query(db.sql`
-        select "Match".match 
+        select "Match".match, U.profilephotos 
         from "Match"
         join "Match" M
         on
         "Match".username = M.match and
         "Match".match = M.username
+        join "User" U
+        on
+        "Match".match = U.username
         where "Match".username = ${username}
         `)).rows;
         return matches;
@@ -133,6 +145,12 @@ class User {
         return isAMatch;
     }
 
+    static async addDitch(username, ditch) {
+        db.query(`
+        insert into 
+        "Ditch"(username, ditch) 
+        values ($1, $2)`, [username, ditch]);
+    }
 }
 
 module.exports = User;

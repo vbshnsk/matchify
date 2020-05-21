@@ -1,6 +1,5 @@
 <template>
     <div id="body">
-        <h2>Recent history:</h2>
         <div id="history">
             <li class="flex header">
                 <h2> Artists </h2>
@@ -38,3 +37,31 @@ export default {
     }
 }
 </script>
+
+<style lang="postcss" scoped>
+    .flex{
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .row>*, .header>*{
+        flex: 4;
+        margin: 0;
+        padding: 10px 20px;
+        border-bottom: rgba(230, 230, 250, 0.575) solid 0.5px;
+    }
+
+    .header{
+        font-size: 12px;
+        h2{
+         font-weight: 600;
+        }
+    }
+
+    .row{
+        font-size: 14px;
+        h3{
+         font-weight: 400;
+        }
+    }
+</style>

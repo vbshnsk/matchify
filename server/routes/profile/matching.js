@@ -14,4 +14,6 @@ router.get('/matches', bodyParser(), Profile.isProtected(), Profile.getUserMatch
 
 router.put('/matches', bodyParser(), Profile.isProtected(), Profile.addMatch(), ctx => ctx.body = ctx.state.isAMatch);
 
+router.put('/ditches', bodyParser(), Profile.isProtected(), Profile.addDitch(), ctx => ctx.status = 200);
+
 module.exports = router;
