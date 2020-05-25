@@ -42,9 +42,17 @@ export default {
             }
             this.prevTaste = Object.assign({}, this.currentTaste);
         },
-        edit(){
+        async edit(){
             Object.assign(this.taste, this.currentTaste);
-            this.$emit('end');
+            const response = await this.axios.put(process.env.VUE_APP_SERVER + '/profile/me/statistics', 
+            { taste: this.taste },
+            {
+                headers: {'Content-Type': 'application/json'},
+                withCredentials: true,
+            });
+            if(response.status === 200) {
+                this.$emit('end');
+            }
         }
     }
 }

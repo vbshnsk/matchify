@@ -20,13 +20,9 @@
               :styles="{position: 'relative', width: '100%', height: '23vh'}"></BarChart>
             <h4> Last played tracks </h4>
             <div id="history">
-                <template v-for="play in info.plays" >
-                    <hr v-bind:key="play.id">
-                    <li class="flex" v-bind:key="play.id">
-                        <h3> {{play.artists.join(', ')}} </h3>
-                        <h3> {{play.name}} </h3>
-                    </li>
-                </template>
+                <List 
+                :data="match.plays"
+                :labels="['Artists', 'Name']"></List>
             </div>                    
         </div>
     </div>
@@ -36,6 +32,7 @@
 import Photos from '../PhotoContainer'
 import Info from '../InfoContainer'
 import BarChart from '../Charts/Bar'
+import List from '../Charts/List'
 
 export default {
     props: {
@@ -49,7 +46,7 @@ export default {
         tasteData() {
             return {
                 datasets: [{
-                    data: Object.values(this.info.taste).sort((a, b) => b - a).slice(0, 5),
+                    data: Object.values(this.info.taste).sort((a, b) => b - a).slice(0, 5).map(v => v.toFixed(2)),
                     backgroundColor: this.calcColors,
                     barPercentage: 0.7,
                 }],
@@ -93,6 +90,7 @@ export default {
         Photos,
         Info,
         BarChart,
+        List,
     }
 }
 </script>
@@ -127,7 +125,6 @@ export default {
         }
     }
     #current-profile {
-        padding: 2vh 0;
         display: flex;
         justify-content: space-evenly;
     }
@@ -135,6 +132,7 @@ export default {
         display: flex;
         flex-direction: column;
         flex-basis: 35%;
+        justify-content: space-evenly;
     }
     #buttons{
         text-align: center;

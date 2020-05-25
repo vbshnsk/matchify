@@ -5,8 +5,8 @@
         <h3> {{ age }}, {{ gender }} </h3>
         <h3> {{ city }} </h3>
         <p> {{ bio }} </p>
-        <a v-if="spotify !== 'authorized'" v-bind:href="spotify"><button class="green"> Connect to Spotify</button></a>
-        <a v-else><button class="skip" disabled> Connected to Spotify</button></a>
+        <a v-if="spotify === 'authorized'"><button class="skip" disabled> Connected to Spotify</button></a>
+        <a v-else-if="spotify" v-bind:href="spotify"><button class="green"> Connect to Spotify</button></a>
     </div>
 </template>
 

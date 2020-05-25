@@ -52,8 +52,8 @@ export default {
     }
 
     .header{
-        font-size: 12px;
         h2{
+         font-size: 12px;
          font-weight: 600;
         }
     }
