@@ -3,14 +3,16 @@
         <template v-if="photos">
             <img id="current"
                 :src="currentPhoto"
-                @click="index = prevIndex">
+                @click="index = prevIndex"
+                :style="{width: width, height: height}">
             <img id="next"
                 v-if="photos.length != 1"
                 :src="nextPhoto" 
-                @click="index = nextIndex">
-            <img id = "next" v-else src="/ph.png">
+                @click="index = nextIndex" 
+                v-bind:style="{ width: width, height: height }">
+            <img id = "next" v-else src="/ph.png" v-bind:style="{ width: width, height: height }">
         </template>
-        <img v-else src="/ph.png">
+        <img v-else src="/ph.png" v-bind:style="{ width: width, height: height }">
     </div>
 </template>
 
@@ -23,6 +25,14 @@ export default {
     },
     props: {
         photos: Array,
+        height: {
+            type: String,
+            default: '24vw', 
+        },
+        width: {
+            type: String,
+            default: '18w', 
+        }
     },
     computed: {
         currentPhoto() {
@@ -44,7 +54,6 @@ export default {
 
 <style lang="postcss" scoped>
 #photo-container {
-        flex: 1;
         text-align: center;
         img {
             width: 18vw;

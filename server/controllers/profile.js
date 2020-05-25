@@ -92,6 +92,8 @@ const exists = () => {
         if(username === 'me'){
             if(ctx.session.authorized){
                 ctx.state.profile = await User.getProfileInfo(ctx.session.username);
+                const plays = (await Track.getPlaysInRange(ctx.session.username, {from: undefined, to: undefined})).rows;
+                ctx.state.profile.topGenres = calculateGenrePlays(plays);
                 await next();
             }
             else {
@@ -175,8 +177,8 @@ const getUserClosestMatches = () => {
             }
             match.taste = taste;
             const plays = (await Track.getPlaysInRange(match.username, {from: undefined, to: undefined})).rows;
-            match.plays = plays.slice(0, 10);
-            match.topGenres = calculateGenrePlays(plays).slice(0, 5);
+            match.plays = plays.slice(0, 5);
+            match.topGenres = calculateGenrePlays(plays).slice(0, 10);
         }
         ctx.state.matches = matches;
         await next();

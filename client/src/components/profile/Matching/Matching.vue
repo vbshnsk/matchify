@@ -12,12 +12,12 @@
             <h4> Taste </h4>
             <BarChart 
              v-bind:chartData="tasteData"
-             :styles="{position: 'relative', width: '30vw', height: '23vh'}">
+             :styles="{position: 'relative', width: '100%', height: '23vh'}">
              </BarChart>
             <h4> Genres </h4>
             <BarChart
               v-bind:chartData="genreData"
-              :styles="{position: 'relative', width: '30vw', height: '23vh'}"></BarChart>
+              :styles="{position: 'relative', width: '100%', height: '23vh'}"></BarChart>
             <h4> Last played tracks </h4>
             <div id="history">
                 <template v-for="play in info.plays" >
@@ -44,21 +44,23 @@ export default {
     computed: {
         info() {
             const {profilephotos, topGenres, taste, plays, ...info} = this.match;
-            return {photos: profilephotos, info: info, genres: topGenres, taste: taste, plays: plays.slice(0, 5)};
+            return {photos: profilephotos, info: info, genres: topGenres, taste: taste, plays: plays};
         },
         tasteData() {
             return {
                 datasets: [{
-                    data: Object.values(this.info.taste).map(v => (v * 100).toPrecision(4)).slice(0, 5).sort((a, b) => b - a),
-                    barThickness: 'flex',
+                    data: Object.values(this.info.taste).sort((a, b) => b - a).slice(0, 5),
+                    backgroundColor: this.calcColors,
+                    barPercentage: 0.7,
                 }],
-                labels: Object.keys(this.info.taste).slice(0, 5).sort((a, b) => this.info.taste[b] - this.info.taste[a]),
+                labels: Object.keys(this.info.taste).sort((a, b) => this.info.taste[b] - this.info.taste[a]).slice(0, 5),
             };
         },
         genreData() {
             return this.info.genres ? {
                 datasets: [{
                     data: this.info.genres.map(v => v[1]),
+                    barPercentage: 0.85,
                 }],
                 labels: this.info.genres.map(v => v[0]),
             } : undefined;
@@ -97,12 +99,13 @@ export default {
 
 <style lang="postcss" scoped>
     #stats{
-        padding: 0 5vw;
         display: flex;
         flex-direction: column;
+        flex-basis: 35%;
         h4 {
             width: 100%;
             text-align: center;
+            font-size: 16px;
             margin: 1.5vh 0;
         }
     }
@@ -124,13 +127,14 @@ export default {
         }
     }
     #current-profile {
-        padding: 1vw 10vw;
+        padding: 2vh 0;
         display: flex;
+        justify-content: space-evenly;
     }
     #profile {
         display: flex;
         flex-direction: column;
-        flex: 1;
+        flex-basis: 35%;
     }
     #buttons{
         text-align: center;

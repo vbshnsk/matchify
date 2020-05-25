@@ -188,7 +188,7 @@ const fetchTags = (query) => new Promise((resolve, reject) =>{
         res.on("end", () => {
             const res = JSON.parse(buffer).toptags;
             if(res === undefined) resolve([]);
-            const tags = res.tag.slice(0, 10).map(tag => tag.name.toLowerCase());
+            const tags = res.tag.slice(0, 5).map(tag => tag.name.toLowerCase());
             if (tags.length === 0) resolve([]);                
             resolve(Track.validGenres(tags));
         })

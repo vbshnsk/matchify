@@ -44,23 +44,6 @@ export default {
     display: flex;
 }
 
-button {
-    background-color: lavender;
-    border: none;
-}
-
-button.green {
-    background-color: rgb(6, 165, 27);
-    color: lavender;
-}
-
-button.skip {
-    background: none;
-    color: lavender;
-    border: lavender 1px solid;
-}
-
-
 .field, button {
     font-size: 18px;
     border-radius: 100px;

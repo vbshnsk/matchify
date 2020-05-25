@@ -41,7 +41,7 @@ class Taste {
         for (const key in this) {
             if(key != 'userid'){
                 this[key] /= sum;
-                this[key] = this[key].toPrecision(3);
+                this[key] = this[key] * 100;
             }
         }
         return this;

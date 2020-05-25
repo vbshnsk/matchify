@@ -99,6 +99,7 @@ hr {
     h3{
         margin-left: 1vw;
         margin-bottom: 0;
+        margin-top: 0;
     }
     #match-button-field {
         padding: 3vh 0;
@@ -108,8 +109,14 @@ hr {
             height: 6vh;
         }
     }
+    #matches-field::-webkit-scrollbar {
+        background: none;
+    }
+    #matches-field::-webkit-scrollbar-track {
+        background: none;
+    }
     #matches-field {
-        padding: 2vh 0;
+        margin: 1vh 0 0 0;
         flex: 1 1 auto;
         height: 0;
         overflow-y: scroll;

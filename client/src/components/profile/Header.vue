@@ -3,7 +3,6 @@
         <ul id="links">
             <li><a id="tm" href="/">Matchify</a></li>
             <li><a v-bind:href="path('')">Profile</a></li>
-            <li><a v-bind:href="path('/statistics')">Statistics</a></li>
             <li><a v-bind:href="path('/history')">History</a></li>
             <li v-if="auth && isOwn"><a v-bind:href="path('/match')">Match!</a></li>
         </ul>

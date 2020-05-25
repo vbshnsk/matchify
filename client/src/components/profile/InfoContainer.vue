@@ -5,6 +5,8 @@
         <h3> {{ age }}, {{ gender }} </h3>
         <h3> {{ city }} </h3>
         <p> {{ bio }} </p>
+        <a v-if="spotify !== 'authorized'" v-bind:href="spotify"><button class="green"> Connect to Spotify</button></a>
+        <a v-else><button class="skip" disabled> Connected to Spotify</button></a>
     </div>
 </template>
 
@@ -17,6 +19,7 @@ export default {
         city: String,
         bio: String,
         birthdate: String,
+        spotify: String,
     },
     computed: {
         age() {
@@ -29,3 +32,14 @@ export default {
     }
 }
 </script>
+
+<style lang="postcss" scoped>
+p{
+    word-wrap: break-word;
+    max-width: 100%;
+}
+button {
+    height: 5vh;
+    width: 12vw;
+}
+</style>
