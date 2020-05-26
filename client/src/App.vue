@@ -27,9 +27,19 @@ a {
  font-weight: bold;
 }
 
+a:hover{
+  color: rgb(6, 165, 27);
+}
+
 button {
     background-color: lavender;
     border: none;
+    cursor: pointer;
+}
+
+button:focus{
+  outline: none;
+  border: none;
 }
 
 .green {
@@ -45,5 +55,6 @@ button.skip {
     background: none;
     color: lavender;
     border: rgb(6, 165, 27)  1px solid;
+    cursor: initial;
 }
 </style>

@@ -99,7 +99,7 @@ export default {
     #stats{
         display: flex;
         flex-direction: column;
-        flex-basis: 35%;
+        flex-basis: 40%;
         h4 {
             width: 100%;
             text-align: center;

@@ -62,18 +62,20 @@ class Track {
      * @param {Date} [range.to]
      */
 
-    static async getPlaysInRange(username, {from, to}){
-        if(to === undefined) to = new Date();
-        if(from === undefined) {
-            from = new Date(); 
-            from.setDate(to.getDate() - 7);
-        }
+    static async getPlaysInRange(username, page){
+        const to = new Date();
+        const from = new Date(); 
+        from.setDate(to.getDate() - 7);
+        const paginationQuery = page ? `limit 15 offset ${(page - 1) * 15}` : '';
+
         return await db.query(`
         select "Track".* from "Play" 
         join "Track" on "Play".trackid = "Track".trackid
         join "User" on "Play".userid = "User".userid
         where username=$1 and (listenedon>$2 and listenedon<$3)
-        order by listenedon desc`, [username, from, to]);
+        order by listenedon desc
+        ${paginationQuery}
+        `, [username, from, to]);
     }
 
     static async getMainGenres(genres){

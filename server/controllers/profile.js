@@ -65,7 +65,7 @@ const calculateStats = (plays) => {
 const historyInRange = (from, to) => {
     return async (ctx, next) => {
         const username = ctx.state.profile.username;
-        const plays = (await Track.getPlaysInRange(username, { from, to })).rows;
+        const plays = (await Track.getPlaysInRange(username, ctx.request.query.page)).rows;
 
         ctx.state.history = plays;
         await next();
@@ -109,7 +109,7 @@ const exists = () => {
         if (username === 'me') {
             if (ctx.session.authorized) {
                 ctx.state.profile = await User.getProfileInfo(ctx.session.username);
-                const plays = (await Track.getPlaysInRange(ctx.session.username, { from: undefined, to: undefined })).rows;
+                const plays = (await Track.getPlaysInRange(ctx.session.username)).rows;
                 ctx.state.profile.stats = calculateStats(plays);
                 await next();
             }
@@ -193,7 +193,7 @@ const getUserClosestMatches = () => {
                 }
             }
             match.taste = taste;
-            const plays = (await Track.getPlaysInRange(match.username, { from: undefined, to: undefined })).rows;
+            const plays = (await Track.getPlaysInRange(match.username)).rows;
             match.plays = plays.slice(0, 5).map(val => { return { artists: val.artists, track: val.name } });
             match.topGenres = calculateStats(plays).genres.slice(0, 10);
         }
