@@ -3,7 +3,7 @@
         <List 
         :data="historyRows"
         :labels="['Artists', 'Track', 'Genres']"></List>
-        <div id="nav">
+        <div id="nav" v-if="max > 1">
             <button class="green" @click="prev" :hidden="page === 1"> &lt; </button>
             <div id="pages">
                 <h3 :hidden="page === 1" @click="goto(prevPage)"> {{ prevPage }} </h3>

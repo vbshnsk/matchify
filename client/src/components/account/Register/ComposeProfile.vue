@@ -18,8 +18,8 @@
                         <option value="anyone">Anyone</option>
                     </select>
                     <div>
-                        <button @click="upload" id="upload"> Confirm </button> 
-                        <button @click="skip" id="skip"> Skip </button> 
+                        <button @click="upload" id="upload" :disabled="uploading"> Confirm </button> 
+                        <button @click="skip" id="skip" :disabled="uploading"> Skip </button> 
                     </div>
                 </div>
             </div>
@@ -37,10 +37,12 @@ export default {
             displayname: "",
             preference: "",
             city: "",
+            uploading: false,
         }
     },
     methods: {
         async upload(){
+            this.isUploading = true;
             const params = {};
             if(this.bio) params["bio"] = this.bio;
             if(this.interests) params["interests"] = this.interestsArr;
@@ -48,15 +50,19 @@ export default {
             if(this.preference) params["preference"] = this.preference;
             if(this.city) params["city"] = this.city;
 
-            const response = (await this.axios.put(process.env.VUE_APP_SERVER + '/profile/me',
-            params,
-            {
-                headers: {'Content-Type': 'application/json'},
-                withCredentials: true,
-            }));
-
-            if(response.status === 200) {
-                this.$router.push('/profile');
+            try {
+                const response = (await this.axios.put(process.env.VUE_APP_SERVER + '/profile/me',
+                params,
+                {
+                    headers: {'Content-Type': 'application/json'},
+                    withCredentials: true,
+                }));
+                if(response.status === 200) {
+                    this.$router.push('/profile');
+                }
+            } catch (error) {
+                this.uploading = false;
+                window.alert('Something has gone wrong...')
             }
         },
         skip() {

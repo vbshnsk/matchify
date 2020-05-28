@@ -14,9 +14,10 @@
                     </div>
                     <div class="message-preview">
                         <h4 class="username">{{ match.match }}</h4>
-                        <p class="message-text-preview"> 
+                        <p class="message-text-preview" v-if="match.lastMessage"> 
                             {{ match.lastMessage.sender === match.match ? '&#8618;' : '&#8617;' }}{{ match.lastMessage.message.length > 70 ? match.lastMessage.message.slice(0, 70) + '...' : match.lastMessage.message}}
                         </p>
+                        <p v-else>New match!</p>
                     </div>
                 </div>
             </div>

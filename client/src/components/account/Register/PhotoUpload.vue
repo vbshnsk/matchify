@@ -22,8 +22,8 @@
                 <input type="file" ref="fileInput" accept="image/jpeg" @change="addImage" style="display: none">
             </div> 
             <div>
-                <button @click="upload" v-bind:disabled="images.length === 0"> Upload </button> 
-                <button @click="skip"> Skip </button> 
+                <button @click="upload" :disabled="images.length === 0 || uploading"> Upload </button> 
+                <button @click="skip" :disabled="uploading"> Skip </button> 
             </div>
         </form>
     </div>
@@ -42,6 +42,7 @@ export default {
             previews: [],
             images: [],
             cropping: undefined,
+            uploading: false,
         }
     },
     methods: {
@@ -66,18 +67,24 @@ export default {
             this.$emit('success');
         },
         async upload(){
+            this.uploading = true
             const params = new FormData();
             this.images.forEach(image => {
                 params.append('photos', image);
             });
-            const response = (await this.axios.post(process.env.VUE_APP_SERVER + '/profile/me/photos',
-            params,
-            {
-                headers: {'Content-Type': 'multipart/form-data'},
-                withCredentials: true,
-            }));
-            if(response.status === 200) {
-                this.$emit('success');
+            try {
+                const response = (await this.axios.post(process.env.VUE_APP_SERVER + '/profile/me/photos',
+                params,
+                {
+                    headers: {'Content-Type': 'multipart/form-data'},
+                    withCredentials: true,
+                }));
+                if(response.status === 200) {
+                    this.$emit('success');
+                }
+            } catch (error) {
+                this.uploading = false;
+                window.alert('Something has gone wrong...');
             }
         }
     }

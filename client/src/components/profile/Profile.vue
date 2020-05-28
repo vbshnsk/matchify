@@ -36,7 +36,7 @@
                     <Bar :styles="{ position: 'relative', height: '90%', width: '100%' }" :chartData="genreData"></Bar>
                 </div>
             </div>
-            <div v-else>
+            <div v-else id="connect">
                 <h1> Connect to Spotify to see more stats! </h1>
             </div>
         </div>
@@ -150,7 +150,7 @@ export default {
 }
 
 
-#profile-stats {
+#profile-stats, #connect {
     flex: 1;
     height: 0;
     display: flex;

@@ -128,7 +128,7 @@ class User {
         "Match".match = U.username
         where "Match".username = ${username}
         `)).rows;
-        Promise.all(matches.map(async val => val.lastMessage = (await db.query(
+        matches.forEach(async val => val.lastMessage = (await db.query(
             db.sql`
             select *
             from "Message"
@@ -137,8 +137,8 @@ class User {
             (receiver=${val.match} and sender=${username})
             order by senton desc
             limit 1`
-        )).rows[0]));
-        return matches;
+        )).rows[0])
+        return Promise.all(matches);
     }
 
     static async checkMatch (username, match) {

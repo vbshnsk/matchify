@@ -10,7 +10,7 @@ export default {
         const code = this.$route.query.code;
         try {
             await this.axios.get(process.env.VUE_APP_SERVER + '/profile/me/spotify_login?code=' + code, {withCredentials: true});
-            this.message = 'Success! Check your <a href="/profile/statistics"> statistics</a> or <a href="/profile/history">history</a>.'
+            this.message = 'Success! Check your <a href="/profile"> profile </a> or <a href="/profile/history">history</a>.'
         } catch (error) {
             this.message = 'Something went wrong... <a href="/profile">Go back to profile.</a>'
         }
@@ -28,7 +28,7 @@ export default {
 
 #message {
     display: flex;
-    height: 90%;
+    flex: 19;
     justify-content: center;
     align-items: center;
     >>> a {

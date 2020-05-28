@@ -37,6 +37,10 @@ button {
     cursor: pointer;
 }
 
+button:disabled {
+  background-color: grey;
+}
+
 button:focus{
   outline: none;
   border: none;

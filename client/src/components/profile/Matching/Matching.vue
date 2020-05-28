@@ -1,5 +1,5 @@
 <template>
-    <div id="current-profile">
+    <div id="current-profile" v-if="match">
         <div id="profile">
             <Photos v-bind:photos="info.photos"></Photos>
             <Info v-bind="info.info"></Info>
@@ -24,6 +24,12 @@
                 :data="match.plays"
                 :labels="['Artists', 'Name']"></List>
             </div>                    
+        </div>
+    </div>
+    <div id="no-match" v-else>
+        <div id="alert">
+            <h1>No matches available.</h1>
+            <h2>Change your taste settings or try again later.</h2>
         </div>
     </div>
 </template>
@@ -124,9 +130,19 @@ export default {
             border: solid 0.05vh rgba(255, 255, 255, 0.1);
         }
     }
-    #current-profile {
+    #current-profile, #no-match {
         display: flex;
         justify-content: space-evenly;
+    }
+    #no-match {
+        align-items: center;
+        height: 100%;
+    }
+    #alert {
+        text-align: center;
+        h1, h2 {
+            margin: 2vh;
+        }
     }
     #profile {
         display: flex;

@@ -48,7 +48,7 @@ export default {
     watch: {
         receiver: async function(){
             this.messages = [];
-            const response = (await this.axios.get(process.env.VUE_APP_SERVER + `/profile/me/chat`, 
+            const response = (await this.axios.get(process.env.VUE_APP_SERVER + `/profile/me/chat?match=${this.receiver}`, 
             {
                 withCredentials: true,
             }));
@@ -74,9 +74,9 @@ export default {
         flex-direction: column-reverse;
         .message{
             margin: 1vh;
-            background-color: black;
+            background-color: #0f0f0f;
             width: 30vw;
-            padding: 2vh;
+            padding: 3vh;
             border-radius: 4vw;
             word-wrap: break-word;
             p, h4 {
@@ -102,7 +102,7 @@ export default {
             flex: 9;
             border-radius: 4vw;
             resize: none;
-            background-color: lavender;
+            background-color: rgba(34, 34, 34, 0.575);
             padding: 2vh 1.2vw;
             margin: 0 0.5vw;
         }

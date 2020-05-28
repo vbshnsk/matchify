@@ -32,7 +32,7 @@
                 <input type="text" v-model="year" placeholder="Year">
             </div>
             <hr>
-            <button @click="submited()"> Register </button>
+            <button @click="submited()" :disabled="uploading"> Register </button>
             <h3>Already have an account? <a href="/login"> Login </a></h3>
         </form>
     </div>
@@ -49,28 +49,31 @@ export default {
             day: '',
             month: '',
             year: '',
-            alert: false,
+            uploading: false,
         }
     },
     methods:{
         async submited(){
+            this.uploading = true;
             const params = new URLSearchParams();
             params.append('username', this.username);
             params.append('password', this.password);
             params.append('email', this.email);
             params.append('birthdate', `${this.day}-${this.month}-${this.year}`);
             params.append('gender', this.gender);
-            const response = (await this.axios.post(process.env.VUE_APP_SERVER + '/register',
-            params,
-            {
-                headers: {'Content-Type': 'application/x-www-form-urlencoded '},
-                withCredentials: true,
-            }));
-            if(response.status === 200){
-                this.$emit('success');
-            }
-            else {
-                this.alert = true;
+            try {
+                const response = (await this.axios.post(process.env.VUE_APP_SERVER + '/register',
+                params,
+                {
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded '},
+                    withCredentials: true,
+                }));
+                if(response.status === 200){
+                    this.$emit('success');
+                }
+            } catch (error) {
+                this.uploading = false;
+                window.alert(error);
             }
             
         }
