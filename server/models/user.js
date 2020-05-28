@@ -128,6 +128,16 @@ class User {
         "Match".match = U.username
         where "Match".username = ${username}
         `)).rows;
+        Promise.all(matches.map(async val => val.lastMessage = (await db.query(
+            db.sql`
+            select *
+            from "Message"
+            where 
+            (receiver=${username} and sender=${val.match}) or
+            (receiver=${val.match} and sender=${username})
+            order by senton desc
+            limit 1`
+        )).rows[0]));
         return matches;
     }
 

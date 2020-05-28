@@ -16,9 +16,19 @@ router.get('/chat', Profile.isProtected(), Chat.get(), ctx => {
     ctx.body = ctx.state.chatHistory;
 });
 
-const WSChat = (server, app) => {
+class Clients {
+    constructor() {
+        this.list = {};
+        this.save = this.saveClient.bind(this);
+    }
+    saveClient(username, ws){
+        this.list[username] = ws;
+    }
+}
+
+const WSChat = (server) => {
     const wss = new WebSocket.Server({ server, path: '/chat', clientTracking: false });
-    const clients = {};
+    const clients = new Clients();
 
     wss.on('connection', async (ws, req) => {
         console.log('Connected to chat websocket');
@@ -26,23 +36,22 @@ const WSChat = (server, app) => {
         const cookies = new Cookies(req, new http.OutgoingMessage(), { keys: ['test'] });
         const cookie = cookies.get('koa:sess', { signed: true });
 
-        if(!clients) { 
+        if(!cookie) { 
             ws.close();
             return;
         }
-        
-        const { receiver } = querystring.parse(req.url.split('?')[1]);
+
         const sender = (await getSession(cookie)).username;
+        clients.saveClient(sender, ws);
 
-        clients[sender] = ws;
-        const receiverws = clients[receiver];
+        console.log(clients);
 
-        Chat.onMessage(receiverws, ws, sender, receiver);
+        Chat.onMessage(clients, sender);
         
-        ws.on('close', () => {
-            clients[sender] = undefined;
-            console.log('closed');
-        });
+        // ws.on('close', () => {
+        //     clients[sender] = undefined;
+        //     console.log('closed');
+        // });
     })
 }
 

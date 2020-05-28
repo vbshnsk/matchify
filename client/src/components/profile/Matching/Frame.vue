@@ -7,14 +7,16 @@
             <hr>
             <h3>Messages</h3>
             <div id="matches-field">
-                <div v-for="match in matches" v-bind:key="match.match" class="match" @click="openChat(match.match)">
+                <div v-for="match in matches" v-bind:key="match.match" class="match" @click="openChat(match.match)" :class="{ active: chatWith === match.match }">
                     <div class="thumbnail-pic-container">
                         <div class="thumbnail-pic" 
                         v-bind:style="{ 'background-image': `url(${match.profilephotos ?'https://matchify.s3.eu-central-1.amazonaws.com/' + match.profilephotos[0] : '/ph.png'})` }"></div>
                     </div>
                     <div class="message-preview">
                         <h4 class="username">{{ match.match }}</h4>
-                        <p calss="message-text-preview"> New match! </p>
+                        <p class="message-text-preview"> 
+                            {{ match.lastMessage.sender === match.match ? '&#8618;' : '&#8617;' }}{{ match.lastMessage.message.length > 70 ? match.lastMessage.message.slice(0, 70) + '...' : match.lastMessage.message}}
+                        </p>
                     </div>
                 </div>
             </div>
@@ -26,7 +28,7 @@
              v-on:next="closestMatches.shift()"
              v-on:match="addMatch">
             </Matching>
-            <Chat v-else-if="mainbar === 'chat'" :receiver="chatWith"></Chat>
+            <Chat v-else-if="mainbar === 'chat'" :receiver="chatWith" :socket="ws" v-on:message="registerMessage"></Chat>
         </div>
     </div>
 </template>
@@ -38,10 +40,8 @@ import Matching from './Matching'
 
 export default {
     beforeRouteEnter(to, from, next){
-      const ws = new WebSocket('ws://localhost:3000/chat');
-      ws.onopen = ()=> console.log(1);
-      ws.onclose = () => console.log(2);
-      next();
+        const ws = new WebSocket('ws://localhost:3000/chat');
+        next(vm => vm.ws = ws);
     },
     data() {
         return {
@@ -50,6 +50,7 @@ export default {
             closestMatches: [],
             matches: [],
             chatWith: undefined,
+            ws: null,
         }
     },
     methods:{
@@ -60,6 +61,7 @@ export default {
                     withCredentials: true,
                 }));
                 this.mainbar = 'matching'
+                this.chatWith = undefined;
                 this.closestMatches = res.data;
             }
         },
@@ -69,6 +71,15 @@ export default {
         openChat(username){
             this.mainbar = 'chat';
             this.chatWith = username;
+        },
+        registerMessage(message){
+            for (const match of this.matches) {
+                console.dir(match, message);
+                if(match.match === message.sender || match.match === message.receiver){
+                     match.lastMessage = message;
+                     break;
+                }
+            }
         }
     },
     async beforeCreate(){
@@ -122,6 +133,7 @@ hr {
     }
     #matches-field::-webkit-scrollbar {
         background: none;
+        display: none;
     }
     #matches-field::-webkit-scrollbar-track {
         background: none;
@@ -133,7 +145,7 @@ hr {
         overflow-y: scroll;
         .match {
             display: flex;
-            margin: 1vh 1vw;
+            padding: 1vh 1vw;
             .thumbnail-pic-container {
                 flex: 1;
                 .thumbnail-pic {
@@ -152,9 +164,14 @@ hr {
                     margin: 0;
                 }
                 p {
+                    word-wrap: break-word;
                     margin: 0.5vh 0;
+                    width: 15vw;
                 }
             }
+        }
+        .match.active{
+            background-color: rgba(0, 0, 0, 0.3);
         }
     }
 }

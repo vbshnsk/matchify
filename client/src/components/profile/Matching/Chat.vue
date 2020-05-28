@@ -5,12 +5,15 @@
             v-for="message in messages" 
             :key="message.id" 
             :class="{sent: receiver === message.receiver}">
+                <h4 class="green"> {{ message.sender }} </h4>
                 <p>{{ message.message }}</p>
             </div>
         </div>
         <div id="input-field">
             <textarea id="bio" placeholder="Message" maxlength="255" v-model="message"></textarea>
-            <button class="green" @click="socket.send(message); message = ''">Send</button>
+            <button class="green" 
+            @click="socket.send(JSON.stringify({message, receiver}));
+            message = ''">Send</button>
         </div>
     </div>
 </template>
@@ -18,30 +21,24 @@
 <script>
 
 export default {
-    beforeUpdate(){
-        console.log
-    },
     props: {
-        receiver: String
+        receiver: String,
+        socket: WebSocket,
     },
     data(){
         return {
             messages: [],
             message: undefined,
-            socket: null,
-        }
-    },
-    methods: {
-        mountSocket(){
-            if(this.socket) this.socket.close();
-            this.socket = new WebSocket(process.env.VUE_APP_CHAT + '?receiver=' + this.receiver);
-            this.socket.onmessage = (e) => {
-                this.messages.unshift(JSON.parse(e.data));
-            }
         }
     },
     async created(){
-        this.mountSocket();
+        this.socket.onmessage = (e) => {
+            const message = JSON.parse(e.data);
+            if(message.sender === this.receiver || message.receiver === this.receiver){
+                this.messages.unshift(JSON.parse(e.data));
+            }
+            this.$emit('message', message)
+        }
         const response = (await this.axios.get(process.env.VUE_APP_SERVER + `/profile/me/chat?match=${this.receiver}`, 
         {
             withCredentials: true,
@@ -51,8 +48,7 @@ export default {
     watch: {
         receiver: async function(){
             this.messages = [];
-            this.mountSocket();
-            const response = (await this.axios.get(process.env.VUE_APP_SERVER + `/profile/me/chat?match=${this.receiver}`, 
+            const response = (await this.axios.get(process.env.VUE_APP_SERVER + `/profile/me/chat`, 
             {
                 withCredentials: true,
             }));
@@ -80,9 +76,13 @@ export default {
             margin: 1vh;
             background-color: black;
             width: 30vw;
-            padding: 1vh;
+            padding: 2vh;
             border-radius: 4vw;
             word-wrap: break-word;
+            p, h4 {
+                margin: 0;
+                margin-bottom: 0.5vh;
+            }
         }
         .sent {
             place-self: flex-end;
@@ -108,7 +108,7 @@ export default {
         }
         button{
             flex: 1;
-            height: 50%;
+            height: 70%;
             margin: 0 0.5vw;
             place-self: center;
         }

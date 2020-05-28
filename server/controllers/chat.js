@@ -16,9 +16,13 @@ const get = () => {
     }
 }
 
-const onMessage = (to, from, user, match) => {
+const onMessage = (clients, user) => {
+    const from = clients.list[user];
     from.on('message', async (data) => {
-        const msg = await Message.insert(data, user, match);
+        console.log(data);
+        const match = JSON.parse(data).receiver;
+        const to = clients.list[match];
+        const msg = await Message.insert(JSON.parse(data).message, user, match);
         if(to) to.send(JSON.stringify(msg));
         from.send(JSON.stringify(msg));
     })
