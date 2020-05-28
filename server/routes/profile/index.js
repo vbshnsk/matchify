@@ -8,6 +8,7 @@ const Profile = require('../../controllers/profile')
 const statistics = require('./statistics').routes();
 const spotify = require('./spotify').routes();
 const matching = require('./matching').routes();
+const chat = require('./chat');
 
 const bodyParser = require('koa-body');
 
@@ -31,6 +32,9 @@ router.post('/photos', bodyParser({multipart: true}), Profile.isProtected(), Pro
     ctx.status = 200;
 });
 
-router.use(statistics, spotify, matching);
+router.use(statistics, spotify, matching, chat.router.routes());
 
-module.exports = router;
+module.exports = {
+    Profile: router,
+    WSChat: chat.WSChat, 
+};

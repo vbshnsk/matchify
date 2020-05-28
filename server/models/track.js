@@ -57,9 +57,7 @@ class Track {
     /**
      * 
      * @param {String} userid 
-     * @param {Object} range
-     * @param {Date} [range.from]
-     * @param {Date} [range.to]
+     * 
      */
 
     static async getPlaysInRange(username, page){

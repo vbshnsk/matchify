@@ -7,7 +7,7 @@
             <hr>
             <h3>Messages</h3>
             <div id="matches-field">
-                <div v-for="match in matches" v-bind:key="match.username" class="match">
+                <div v-for="match in matches" v-bind:key="match.match" class="match" @click="openChat(match.match)">
                     <div class="thumbnail-pic-container">
                         <div class="thumbnail-pic" 
                         v-bind:style="{ 'background-image': `url(${match.profilephotos ?'https://matchify.s3.eu-central-1.amazonaws.com/' + match.profilephotos[0] : '/ph.png'})` }"></div>
@@ -26,7 +26,7 @@
              v-on:next="closestMatches.shift()"
              v-on:match="addMatch">
             </Matching>
-            <Chat v-else-if="mainbar === 'chat'"></Chat>
+            <Chat v-else-if="mainbar === 'chat'" :receiver="chatWith"></Chat>
         </div>
     </div>
 </template>
@@ -37,12 +37,19 @@ import Matching from './Matching'
 
 
 export default {
+    beforeRouteEnter(to, from, next){
+      const ws = new WebSocket('ws://localhost:3000/chat');
+      ws.onopen = ()=> console.log(1);
+      ws.onclose = () => console.log(2);
+      next();
+    },
     data() {
         return {
             mainbar: '',
             matchesLoading: false,
             closestMatches: [],
             matches: [],
+            chatWith: undefined,
         }
     },
     methods:{
@@ -58,7 +65,11 @@ export default {
         },
         addMatch(value) {
             this.matches.unshift(value);
-        } 
+        },
+        openChat(username){
+            this.mainbar = 'chat';
+            this.chatWith = username;
+        }
     },
     async beforeCreate(){
         this.matches = (await this.axios.get(process.env.VUE_APP_SERVER + '/profile/me/matches',

@@ -131,13 +131,17 @@ class User {
         return matches;
     }
 
-    static async addMatch(username, match) {
-        const isAMatch = (await db.query(`
+    static async checkMatch (username, match) {
+        return (await db.query(`
         select *
         from "Match"
         where 
         username = $1 and 
         match = $2`, [match, username])).rowCount > 0;
+    }
+
+    static async addMatch(username, match) {
+        const isAMatch = await this.checkMatch(username, match);
         db.query(`
         insert into 
         "Match"(username, match) 

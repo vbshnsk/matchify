@@ -7,56 +7,6 @@ const AWS = require('aws-sdk');
 const fs = require('fs');
 
 /**
- * Calculate the Taste based on what User has played
- * @param {[Track]} plays 
- * 
- */
-
-const calculateTaste = async (plays) => {
-    const stats = new Taste();
-    const maingenres = await Promise.all(plays.map(val => Track.getMainGenres(val.genres)));
-
-    maingenres.map(val =>
-        val.reduce((accum, val) => {
-            accum[val]++;
-            return accum;
-        }, new Taste()))
-        .forEach(val => stats.add(val));
-    return stats.normalize();
-}
-
-/**
- * Claculate the number of different genres the User has played
- * @param {[Track]} plays 
- * 
- */
-
-const calculateStats = (plays) => {
-    const stats = {
-        genres: [],
-        artists: [],
-        tracks: [],
-    };
-    plays.forEach(val => {
-        stats.genres = [...stats.genres, ...val.genres];
-        stats.artists = [...stats.artists, ...val.artists];
-        stats.tracks = [...stats.tracks, val.name];
-    });
-    for (const key in stats) {
-        const count = stats[key].reduce((accum, val) => {
-            if (!accum[val]) accum[val] = 0;
-            accum[val]++;
-            return accum;
-        }, {});
-        stats[key] = Object.entries(count).sort((a, b) => {
-            if (a[1] > b[1]) return -1;
-            return 1;
-        });
-    }
-    return stats;
-}
-
-/**
  * Returns current request User's history of Plays
  * @param {Date} from 
  * @param {Date} to 
@@ -77,7 +27,7 @@ const updateTaste = (src) => {
         let taste;
         if (src === 'spotify' || ctx.request.body.sync) {
             const plays = ctx.state.history;
-            taste = await calculateTaste(plays)
+            taste = await Taste.calculateTaste(plays)
         }
         else {
             taste = ctx.request.body.taste;
@@ -92,7 +42,7 @@ const updateTaste = (src) => {
 const statsFromHistory = () => {
     return async (ctx, next) => {
         const plays = ctx.state.history;
-        ctx.state.profile.stats = calculateStats(plays);
+        ctx.state.profile.stats = Taste.calculateStats(plays);
 
         await next();
     }
@@ -110,7 +60,7 @@ const exists = () => {
             if (ctx.session.authorized) {
                 ctx.state.profile = await User.getProfileInfo(ctx.session.username);
                 const plays = (await Track.getPlaysInRange(ctx.session.username)).rows;
-                ctx.state.profile.stats = calculateStats(plays);
+                ctx.state.profile.stats = Taste.calculateStats(plays);
                 await next();
             }
             else {
@@ -172,61 +122,6 @@ const updateProfile = () => {
     }
 }
 
-const getTopGenres = (taste, eps) => Object.keys(taste)
-    .sort((a, b) => taste[b] - taste[a])
-    .splice(0, 3)
-    .reduce((prev, cur) => [...prev, cur, taste[cur] - eps, taste[cur] + eps], []);
-
-const getUserClosestMatches = () => {
-    return async (ctx, next) => {
-        const eps = 0.5;
-        const topGenres = getTopGenres(ctx.state.profile.taste, eps);
-        const preference = ctx.state.profile.preference;
-        const matches = await User.getClosestMatches(ctx.state.profile.username, topGenres, null, null, preference, eps);
-        for (const match of matches) {
-            const taste = {}
-            for (const key in match) {
-                const genresArr = ['classical', 'rock', 'pop', 'hiphop', 'rnb', 'country', 'jazz', 'electronic', 'latin', 'folk', 'blues'];
-                if (genresArr.some(val => key === val)) {
-                    taste[key] = match[key];
-                    match[key] = undefined;
-                }
-            }
-            match.taste = taste;
-            const plays = (await Track.getPlaysInRange(match.username)).rows;
-            match.plays = plays.slice(0, 5).map(val => { return { artists: val.artists, track: val.name } });
-            match.topGenres = calculateStats(plays).genres.slice(0, 10);
-        }
-        ctx.state.matches = matches;
-        await next();
-    }
-}
-
-const getUserMatches = () => {
-    return async (ctx, next) => {
-        ctx.state.matches = await User.getMatches(ctx.state.profile.username);
-        await next();
-    }
-}
-
-const addMatch = () => {
-    return async (ctx, next) => {
-        const match = ctx.request.body.match;
-        const username = ctx.state.profile.username;
-        ctx.state.isAMatch = await User.addMatch(username, match);
-        await next();
-    }
-}
-
-const addDitch = () => {
-    return async (ctx, next) => {
-        const ditch = ctx.request.body.ditch;
-        const username = ctx.state.profile.username;
-        await User.addDitch(username, ditch);
-        await next();
-    }
-}
-
 
 module.exports = {
     historyInRange,
@@ -236,8 +131,4 @@ module.exports = {
     isProtected,
     uploadPhotos,
     updateProfile,
-    getUserClosestMatches,
-    getUserMatches,
-    addMatch,
-    addDitch,
 };
