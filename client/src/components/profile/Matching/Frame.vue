@@ -41,7 +41,7 @@ import Matching from './Matching'
 
 export default {
     beforeRouteEnter(to, from, next){
-        const ws = new WebSocket('ws://localhost:3000/chat');
+        const ws = new WebSocket(process.env.VUE_APP_CHAT);
         next(vm => vm.ws = ws);
     },
     data() {
