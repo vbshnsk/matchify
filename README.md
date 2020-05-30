@@ -11,7 +11,6 @@ Music taste based matching and statistic aggregation app linked to Spotify.
 
 ## Technologies:
 ### Front-end:
-* PWA
 * Vue
 ### Back-End
 * Koa
