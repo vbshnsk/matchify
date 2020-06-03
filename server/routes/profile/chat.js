@@ -47,12 +47,15 @@ const WSChat = (server) => {
         console.log(clients);
 
         Chat.onMessage(clients, sender);
+
         
         // ws.on('close', () => {
         //     clients[sender] = undefined;
         //     console.log('closed');
         // });
     })
+    
+    return server;
 }
 
 module.exports = {

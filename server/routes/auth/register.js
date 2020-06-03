@@ -20,7 +20,7 @@ router.use(async (ctx, next) =>{
 router.get("/", ctx => ctx.body = "Not the page you're looking for.");
 
 router.post("/", bodyParser(), User.register(), User.authorize(), ctx => {
-    ctx.redirect('/login');
+    ctx.status = 200;
 });
 
 

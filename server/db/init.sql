@@ -83,13 +83,13 @@ create table "Message" (
     constraint "Message_pk" primary key (messageid)
 );
 
-alter table "Taste" add constraint "Taste_fk0" foreign key ("username") references "User"("username");
+alter table "Taste" add constraint "Taste_fk0" foreign key ("username") references "User"("username") on delete cascade;
 alter table "Play" add constraint "Play_fk0" foreign key ("userid") references "User"("userid");
 alter table "Play" add constraint "Play_fk1" foreign key ("trackid") references "Track"("trackid");
-alter table "Match" add constraint "Match_fk0" foreign key ("username") references "User"("username");
-alter table "Match" add constraint "Match_fk1" foreign key ("match") references "User"("username");
-alter table "Message" add constraint "Message_fk0" foreign key (sender) references "User"("username");
-alter table "Message" add constraint "Message_fk1" foreign key (receiver) references "User"("username");
+alter table "Match" add constraint "Match_fk0" foreign key ("username") references "User"("username") on delete cascade ;
+alter table "Match" add constraint "Match_fk1" foreign key ("match") references "User"("username") on delete cascade ;
+alter table "Message" add constraint "Message_fk0" foreign key (sender) references "User"("username") on delete cascade;
+alter table "Message" add constraint "Message_fk1" foreign key (receiver) references "User"("username") on delete cascade ;
 
 create index pair_idx on "Message" using btree(sender, receiver);
 create index time_idx on "Play" using btree(listenedon);

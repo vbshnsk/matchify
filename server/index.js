@@ -2,7 +2,6 @@
 
 const PORT = process.env.PORT || 3000;
 const Koa = require("koa");
-const logger = require("koa-logger");
 const session = require('koa-session');
 const routes = require("./routes");
 
@@ -20,8 +19,13 @@ app.use(async (ctx, next) => {
     ctx.set('Access-Control-Allow-Headers', "Origin, X-Requested-With, Content-Type, Accept")
     await next();
 })
+if(process.env.NODE_ENV !== 'test'){
+    const logger = require("koa-logger");
+    app.use(logger());
+}
 
-app.use(logger());
 routes.mountRoutes(app);
 
-routes.mountChat(app.listen(PORT, () => console.log("Server is up on port", PORT)));
+const newApp = routes.mountChat(app.listen(PORT, () => console.log("Server is up on port", PORT)));
+
+module.exports = newApp;

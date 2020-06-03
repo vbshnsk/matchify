@@ -4,7 +4,8 @@
   "description": "Music taste based matching and statistic aggregation app linked to Spotify.",
   "main": "index.js",
   "scripts": {
-    "test": "npm run lint",
+    "test": "sudo docker-compose run -e NODE_ENV=\"test\" server npm run unit",
+    "unit": "mocha",
     "lint": "eslint ."
   },
   "repository": {
@@ -22,13 +23,11 @@
     "aws-sdk": "^2.673.0",
     "bcryptjs": "^2.4.3",
     "cookies": "^0.8.0",
-    "dotenv": "^8.2.0",
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",
     "koa-logger": "^3.2.1",
     "koa-router": "^8.0.8",
     "koa-session": "^5.13.1",
-    "koa-static": "^5.0.0",
     "pg": "^8.0.2",
     "spotify-web-api-node": "^4.0.0",
     "sql-template": "^1.2.0",
@@ -36,6 +35,9 @@
     "ws": "^7.3.0"
   },
   "devDependencies": {
-    "eslint": "^6.8.0"
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "eslint": "^6.8.0",
+    "mocha": "^7.2.0"
   }
 }
