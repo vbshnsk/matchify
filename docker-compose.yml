@@ -1,0 +1,42 @@
+version: "3.4"
+
+services:
+    server:
+        container_name: server
+        build: 
+            context: server/
+            args:
+                - NODE_ENV=production
+        ports: 
+            - "3000:3000"
+        env_file: .env
+        networks:
+            - network
+        depends_on: 
+            - postgres
+    client:
+        container_name: client
+        build: 
+            context: client/
+            args:
+                - NODE_ENV=production
+        ports:
+            - "8080:80"
+        env_file: .env
+        depends_on: 
+            - server
+    postgres:
+        container_name: postgres
+        image: postgres
+        env_file: .env
+        ports:
+            - "5432:5432"
+        networks:
+            - network
+        volumes: 
+             - /vbshnsk/docker/pg:/var/lib/postgresql/data 
+
+networks:
+    network:
+        driver: bridge
+
